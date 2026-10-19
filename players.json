@@ -1,33 +1,5 @@
 [
   {
-    "id": "CS-1001",
-    "name": "Trinia Hoolan",
-    "handle": "@trinia_k",
-    "tier": "Gold VIP",
-    "deposits": 0.0,
-    "cashouts": 15.0,
-    "matchUsed": 1,
-    "platformAccounts": {
-      "OS": "TriniaOS777"
-    },
-    "cashoutChannel": "Chime",
-    "notes": "Left $10 balance on Orionstars with freeplay bonus."
-  },
-  {
-    "id": "CS-1002",
-    "name": "Christi Ranson",
-    "handle": "@christi_r",
-    "tier": "Silver VIP",
-    "deposits": 0.0,
-    "cashouts": 0.0,
-    "matchUsed": 0,
-    "platformAccounts": {
-      "OS": "ChristiOrion"
-    },
-    "cashoutChannel": "Cash App",
-    "notes": "Referred boyfriend via Telegram @Camilla777."
-  },
-  {
     "id": "CS-1003",
     "name": "Chris Fulmer",
     "handle": "1Dtko1yTWT",
