@@ -9,6 +9,40 @@
     "matchUsed": 1,
     "platformAccounts": {},
     "cashoutChannel": "googlepay",
+    "notes": "New registration",
+    "fbProfile": "https://www.facebook.com/share/1Ff9Cno5Wy/"
+  },
+  {
+    "id": "CS-1002",
+    "name": "Jacob Sayers",
+    "fbProfile": "https://www.facebook.com/share/18HYugFrBm/",
+    "tier": "Silver",
+    "deposits": 9.99,
+    "cashouts": 0.0,
+    "matchUsed": 1,
+    "cashoutChannel": "Chime",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1003",
+    "name": "Lucky Shaw",
+    "fbProfile": "https://www.facebook.com/share/1HnELpjrTW/",
+    "tier": "Bronze",
+    "deposits": 10.0,
+    "cashouts": 80.0,
+    "matchUsed": 1,
+    "cashoutChannel": "Chime (LVBryant91)",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1004",
+    "name": "William Handley",
+    "fbProfile": "https://www.facebook.com/share/19onrMCeZb/",
+    "tier": "Bronze",
+    "deposits": 0.0,
+    "cashouts": 95.0,
+    "matchUsed": 0,
+    "cashoutChannel": "Chime (Slottsmoney89)",
     "notes": "New registration"
   }
 ]
