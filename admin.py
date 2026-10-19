@@ -15,18 +15,22 @@ def save_data(data):
     print("\n✅ Database updated locally!")
 
 def show_players(players):
-    print("\n--- CURRENT PLAYERS ---")
+    print("\n--- CURRENT REGISTERED PLAYERS ---")
     for idx, p in enumerate(players):
         net = p['deposits'] - p['cashouts']
-        print(f"[{idx + 1}] {p['name']} ({p['handle']}) | Dep: ${p['deposits']} | Cashout: ${p['cashouts']} | Net Win: ${net}")
+        fb = p.get('fbProfile', 'No FB Link')
+        print(f"[{idx + 1}] {p['name']} ({p['tier']}) | FB: {fb} | Dep: ${p['deposits']} | Cashout: ${p['cashouts']}")
 
 def record_transaction():
     players = load_data()
+    if not players:
+        print("No players found!")
+        return
     show_players(players)
-    choice = int(input("\nSelect Player # to update: ")) - 1
+    choice = int(input("\nSelect Player # for transaction: ")) - 1
     player = players[choice]
     
-    print(f"\nUpdating {player['name']}:")
+    print(f"\nQuick Transaction for {player['name']}:")
     print("1. Add Deposit")
     print("2. Add Cashout")
     print("3. Update Notes")
@@ -35,8 +39,8 @@ def record_transaction():
     if action == "1":
         amt = float(input("Deposit Amount ($): "))
         player['deposits'] += amt
-        if player['matchUsed'] < 5:
-            player['matchUsed'] += 1
+        if player.get('matchUsed', 0) < 5:
+            player['matchUsed'] = player.get('matchUsed', 0) + 1
             print(f"🎉 Deposit match applied! ({player['matchUsed']}/5 used)")
     elif action == "2":
         amt = float(input("Cashout Amount ($): "))
@@ -47,60 +51,66 @@ def record_transaction():
         
     save_data(players)
 
+def edit_player_profile():
+    players = load_data()
+    if not players:
+        print("No players found!")
+        return
+    show_players(players)
+    choice = int(input("\nSelect Player # to EDIT: ")) - 1
+    p = players[choice]
+    
+    print(f"\n--- EDITING PROFILE: {p['name']} ---")
+    print(f"1. Name (Current: {p['name']})")
+    print(f"2. Facebook Profile Link (Current: {p.get('fbProfile', 'None')})")
+    print(f"3. VIP Tier (Current: {p['tier']})")
+    print(f"4. Preferred Cashout Channel (Current: {p['cashoutChannel']})")
+    print(f"5. Total Deposits (Current: ${p['deposits']})")
+    print(f"6. Total Cashouts (Current: ${p['cashouts']})")
+    print(f"7. Signup Match Used Count (Current: {p.get('matchUsed', 0)}/5)")
+    print("8. Cancel")
+    
+    field = input("\nSelect field to edit (1-8): ")
+    if field == "1":
+        p['name'] = input("New Name: ")
+    elif field == "2":
+        p['fbProfile'] = input("New Facebook Profile URL (https://facebook.com/...): ")
+    elif field == "3":
+        p['tier'] = input("New VIP Tier (Bronze/Silver/Gold/Platinum VIP): ")
+    elif field == "4":
+        p['cashoutChannel'] = input("New Cashout Handle (e.g. Chime / Cash App): ")
+    elif field == "5":
+        p['deposits'] = float(input("Set Total Deposits ($): "))
+    elif field == "6":
+        p['cashouts'] = float(input("Set Total Cashouts ($): "))
+    elif field == "7":
+        p['matchUsed'] = int(input("Set Signup Match Count (0-5): "))
+    elif field == "8":
+        return
+        
+    save_data(players)
+
 def add_new_player():
     players = load_data()
     print("\n--- ADD NEW VIP PLAYER ---")
     name = input("Player Full Name: ")
-    handle = input("Social Handle (e.g. @username): ")
-    tier = input("Tier (Bronze / Silver / Gold / Platinum VIP): ") or "Gold VIP"
+    fb_link = input("Facebook Profile URL (e.g. https://facebook.com/username): ")
+    tier = input("VIP Tier (Bronze / Silver / Gold / Platinum VIP) [Default: Gold VIP]: ") or "Gold VIP"
     channel = input("Preferred Cashout Channel (e.g. Chime / Cash App): ")
     
     new_p = {
         "id": f"CS-{1000 + len(players) + 1}",
         "name": name,
-        "handle": handle,
+        "fbProfile": fb_link,
         "tier": tier,
         "deposits": 0.0,
         "cashouts": 0.0,
         "matchUsed": 0,
-        "platformAccounts": {},
         "cashoutChannel": channel,
         "notes": "New registration"
     }
     players.append(new_p)
     save_data(players)
-
-def reset_database():
-    confirm = input("\n⚠️ Are you sure you want to RESET database to 0? (type 'YES'): ")
-    if confirm == "YES":
-        initial_data = [
-            {
-                "id": "CS-1001",
-                "name": "Trinia Hoolan",
-                "handle": "@trinia_k",
-                "tier": "Gold VIP",
-                "deposits": 0.0,
-                "cashouts": 15.0,
-                "matchUsed": 1,
-                "platformAccounts": {"OS": "TriniaOS777"},
-                "cashoutChannel": "Chime",
-                "notes": "Left $10 balance on Orionstars with freeplay bonus."
-            },
-            {
-                "id": "CS-1002",
-                "name": "Christi Ranson",
-                "handle": "@christi_r",
-                "tier": "Silver VIP",
-                "deposits": 0.0,
-                "cashouts": 0.0,
-                "matchUsed": 0,
-                "platformAccounts": {"OS": "ChristiOrion"},
-                "cashoutChannel": "Cash App",
-                "notes": "Referred boyfriend via Telegram @Camilla777."
-            }
-        ]
-        save_data(initial_data)
-        print("✅ Database reset to clean state!")
 
 def main():
     while True:
@@ -108,9 +118,9 @@ def main():
         print("  CAMILLA SWEEPS VIP MANAGER (PYTHON)")
         print("====================================")
         print("1. View All Players & Financials")
-        print("2. Record Deposit / Cashout / Note")
-        print("3. Add New VIP Player")
-        print("4. Reset Database to Clean State")
+        print("2. Quick Deposit / Cashout / Note")
+        print("3. Edit Existing Player Profile")
+        print("4. Add New VIP Player")
         print("5. Exit")
         
         choice = input("Select choice (1-5): ")
@@ -119,9 +129,9 @@ def main():
         elif choice == "2":
             record_transaction()
         elif choice == "3":
-            add_new_player()
+            edit_player_profile()
         elif choice == "4":
-            reset_database()
+            add_new_player()
         elif choice == "5":
             break
 
