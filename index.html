@@ -98,7 +98,8 @@
                 </div>
                 <div>
                   <p class="text-xs text-gray-400">Net Win</p>
-                  <p class="text-sm font-bold ${netWin >= 0 ? 'text-blue-400' : 'text-rose-400'}">$${netWin.toFixed(2)}</p>
+                  <p class="text-sm font-bold ${netWin >= 0 ? 'text-blue-400' : 'text-rose-400'}">${netWin >= 0 ? '$' + netWin.toFixed(2) : '-$' + Math.abs(netWin).toFixed(2)}</p>
+
                 </div>
               </div>
               <div class="text-xs text-gray-400 space-y-1">
