@@ -66,5 +66,16 @@
     "matchUsed": 1,
     "cashoutChannel": "Chime",
     "notes": "New registration"
+  },
+  {
+    "id": "CS-1007",
+    "name": "Ilia Rubi",
+    "fbProfile": "https://www.facebook.com/profile.php?id=61577239430517",
+    "tier": "Bronze",
+    "deposits": 10.0,
+    "cashouts": 0.0,
+    "matchUsed": 1,
+    "cashoutChannel": "Cashapp",
+    "notes": "New registration"
   }
 ]
