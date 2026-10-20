@@ -19,7 +19,7 @@
     "tier": "Silver",
     "deposits": 9.99,
     "cashouts": 0.0,
-    "matchUsed": 1,
+    "matchUsed": 5,
     "cashoutChannel": "Chime",
     "notes": "New registration"
   },
@@ -38,10 +38,10 @@
     "id": "CS-1004",
     "name": "William Handley",
     "fbProfile": "https://www.facebook.com/share/19onrMCeZb/",
-    "tier": "Bronze",
+    "tier": "Silver",
     "deposits": 0.0,
     "cashouts": 95.0,
-    "matchUsed": 0,
+    "matchUsed": 5,
     "cashoutChannel": "Chime (Slottsmoney89)",
     "notes": "New registration"
   },
@@ -63,7 +63,7 @@
     "tier": "Bronze",
     "deposits": 9.99,
     "cashouts": 60.0,
-    "matchUsed": 1,
+    "matchUsed": 2,
     "cashoutChannel": "Chime",
     "notes": "New registration"
   },
@@ -85,7 +85,7 @@
     "tier": "Silver",
     "deposits": 18.98,
     "cashouts": 0.0,
-    "matchUsed": 0,
+    "matchUsed": 2,
     "cashoutChannel": "CashApp",
     "notes": "New registration"
   }
