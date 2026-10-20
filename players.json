@@ -62,7 +62,7 @@
     "fbProfile": "https://www.facebook.com/share/19gGnySsPK/",
     "tier": "Bronze",
     "deposits": 9.99,
-    "cashouts": 70.0,
+    "cashouts": 60.0,
     "matchUsed": 1,
     "cashoutChannel": "Chime",
     "notes": "New registration"
@@ -76,6 +76,17 @@
     "cashouts": 0.0,
     "matchUsed": 1,
     "cashoutChannel": "Cashapp",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1008",
+    "name": "Bigg Kayy Simmxx",
+    "fbProfile": "https://www.facebook.com/share/1A82vGnd5P/",
+    "tier": "Silver",
+    "deposits": 18.98,
+    "cashouts": 0.0,
+    "matchUsed": 0,
+    "cashoutChannel": "CashApp",
     "notes": "New registration"
   }
 ]
