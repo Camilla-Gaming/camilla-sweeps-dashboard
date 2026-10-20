@@ -44,5 +44,27 @@
     "matchUsed": 0,
     "cashoutChannel": "Chime (Slottsmoney89)",
     "notes": "New registration"
+  },
+  {
+    "id": "CS-1005",
+    "name": "Christopher Hamaker",
+    "fbProfile": "https://www.facebook.com/christopher.hamaker.427756",
+    "tier": "Bronze",
+    "deposits": 9.99,
+    "cashouts": 0.0,
+    "matchUsed": 1,
+    "cashoutChannel": "CashApp ",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1006",
+    "name": "Amy Hernandez",
+    "fbProfile": "https://www.facebook.com/share/19gGnySsPK/",
+    "tier": "Bronze",
+    "deposits": 0.0,
+    "cashouts": 70.0,
+    "matchUsed": 0,
+    "cashoutChannel": "Chime",
+    "notes": "New registration"
   }
 ]
