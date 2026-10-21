@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "referrerName": "Sarah Jenkins",
+    "referrerLink": "https://facebook.com/sarah",
+    "players": [
+      { "name": "Alex Smith", "link": "https://facebook.com/alex" },
+      { "name": "David Ray", "link": "https://facebook.com/david" }
+    ],
+    "status": "Active & Verified",
+    "date": "2026-10-21"
+  }
+]

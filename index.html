@@ -64,23 +64,20 @@
   <div id="section-players" class="space-y-6">
     <div class="flex justify-between items-center">
       <h2 class="text-lg font-bold text-white">Active Players Database</h2>
-      <span class="text-xs text-gray-400">Loaded from players.json</span>
+      <span class="text-xs text-gray-400">Loaded live from players.json</span>
     </div>
     <div id="players-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Dynamic Cards Load Here -->
     </div>
   </div>
 
-  <!-- TAB 2: REFERRAL NETWORK & TRACKING SECTION -->
+  <!-- TAB 2: REFERRAL NETWORK SECTION -->
   <div id="section-referrals" class="space-y-6 hidden">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="flex justify-between items-center">
       <div>
         <h2 class="text-lg font-bold text-white">Referral Network Management</h2>
-        <p class="text-xs text-gray-400">Track referrers and their referred players with Facebook profile links</p>
+        <p class="text-xs text-gray-400">Loaded live for all users from referrals.json</p>
       </div>
-      <button onclick="openAddReferralModal()" class="bg-emerald-500 hover:bg-emerald-600 text-black font-bold px-4 py-2 rounded-xl text-xs transition flex items-center shadow-md">
-        <i class="fa-solid fa-plus mr-1.5"></i> Add New Referral Group
-      </button>
     </div>
 
     <!-- Referrals Grid Container -->
@@ -89,61 +86,9 @@
     </div>
   </div>
 
-  <!-- ADD REFERRAL MODAL -->
-  <div id="referral-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card border border-amber-500/40 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-amber-400">Add Referrer & Players</h3>
-        <button onclick="closeAddReferralModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-gray-400 mb-1 font-semibold">Referrer Real Name / Username</label>
-          <input type="text" id="ref-name" placeholder="e.g. Sarah Jenkins" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-white font-bold focus:outline-none focus:border-amber-400">
-        </div>
-        <div>
-          <label class="block text-gray-400 mb-1 font-semibold">Referrer Facebook Profile Link</label>
-          <input type="url" id="ref-link" placeholder="https://facebook.com/sarah.jenkins" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-white font-bold focus:outline-none focus:border-amber-400">
-        </div>
-        <div>
-          <label class="block text-gray-400 mb-1 font-semibold">Referred Players (Name & FB Link)</label>
-          <textarea id="ref-players-text" rows="4" placeholder="Enter one per line like:&#10;Alex Smith - https://facebook.com/alex&#10;David Ray - https://facebook.com/david" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white font-bold focus:outline-none focus:border-amber-400"></textarea>
-          <p class="text-[10px] text-gray-500 mt-1">Format each player on a new line: <code class="text-amber-400">Player Name - Facebook Link</code></p>
-        </div>
-        <div>
-          <label class="block text-gray-400 mb-1 font-semibold">Bonus Status</label>
-          <select id="ref-status" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-white font-bold focus:outline-none focus:border-amber-400">
-            <option value="Active & Verified">Active & Verified (100% Match)</option>
-            <option value="Pending Verification">Pending Verification</option>
-            <option value="Bonus Claimed">Bonus Claimed</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="pt-2 flex gap-3">
-        <button onclick="saveReferralGroup()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-extrabold py-2.5 rounded-xl text-xs transition">Save Referral Group</button>
-        <button onclick="closeAddReferralModal()" class="bg-gray-800 text-gray-300 hover:bg-gray-700 font-semibold px-4 py-2.5 rounded-xl text-xs transition">Cancel</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     let globalPlayersData = [];
-    let referralGroups = JSON.parse(localStorage.getItem('camilla_referrals')) || [
-      { 
-        id: 1, 
-        referrerName: "Sarah Jenkins", 
-        referrerLink: "https://facebook.com/sarah", 
-        players: [
-          { name: "Alex Smith", link: "https://facebook.com/alex" },
-          { name: "David Ray", link: "https://facebook.com/david" },
-          { name: "Emma Watson", link: "https://facebook.com/emma" }
-        ], 
-        status: "Active & Verified", 
-        date: "2026-10-01" 
-      }
-    ];
+    let globalReferralsData = [];
 
     async function loadDatabase() {
       const btn = document.getElementById('refresh-btn');
@@ -155,26 +100,27 @@
       text.innerText = 'Syncing...';
 
       try {
-        const response = await fetch('players.json?v=' + new Date().getTime());
-        if (!response.ok) throw new Error("Network response was not ok");
-        globalPlayersData = await response.json();
-        renderDashboard(globalPlayersData);
-        renderReferrals();
-      } catch (err) {
-        console.error("Error loading players.json:", err);
-        if (globalPlayersData.length === 0) {
-          globalPlayersData = [
-            { name: "Demo Player 32", fbProfile: "#", tier: "VIP Gold", deposits: 50.0, cashouts: 120.0, cashoutChannel: "Cash App", matchUsed: 2, notes: "Sample player loaded." }
-          ];
+        // Fetch Players Data
+        const resPlayers = await fetch('players.json?v=' + new Date().getTime());
+        if (resPlayers.ok) {
+          globalPlayersData = await resPlayers.json();
+          renderDashboard(globalPlayersData);
         }
-        renderDashboard(globalPlayersData);
-        renderReferrals();
+
+        // Fetch Real Referral Data Live from JSON
+        const resReferrals = await fetch('referrals.json?v=' + new Date().getTime());
+        if (resReferrals.ok) {
+          globalReferralsData = await resReferrals.json();
+          renderReferrals(globalReferralsData);
+        }
+      } catch (err) {
+        console.error("Error syncing JSON database files:", err);
       } finally {
         setTimeout(() => {
           btn.disabled = false;
           icon.classList.remove('fa-spin');
           text.innerText = 'Refresh Data';
-        }, 600);
+        }, 500);
       }
     }
 
@@ -247,88 +193,21 @@
         playersSec.classList.add('hidden');
         tabReferrals.className = "px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-black shadow-lg";
         tabPlayers.className = "px-4 py-2 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 hover:text-white border border-gray-800";
-        renderReferrals();
       }
     }
 
-    function openAddReferralModal() {
-      document.getElementById('referral-modal').classList.remove('hidden');
-    }
-
-    function closeAddReferralModal() {
-      document.getElementById('referral-modal').classList.add('hidden');
-    }
-
-    function saveReferralGroup() {
-      const referrerName = document.getElementById('ref-name').value.trim();
-      const referrerLink = document.getElementById('ref-link').value.trim();
-      const playersRaw = document.getElementById('ref-players-text').value.trim();
-      const status = document.getElementById('ref-status').value;
-
-      if (!referrerName) {
-        alert("Please enter the referrer's name.");
-        return;
-      }
-
-      // Parse lines like "Alex Smith - https://facebook.com/alex"
-      let playersList = [];
-      if (playersRaw) {
-        const lines = playersRaw.split('\n');
-        lines.forEach(line => {
-          if (line.includes('-')) {
-            const parts = line.split('-');
-            playersList.push({
-              name: parts[0].trim(),
-              link: parts.slice(1).join('-').trim()
-            });
-          } else if (line.trim().length > 0) {
-            playersList.push({
-              name: line.trim(),
-              link: "#"
-            });
-          }
-        });
-      }
-
-      const newGroup = {
-        id: Date.now(),
-        referrerName: referrerName,
-        referrerLink: referrerLink || "#",
-        players: playersList,
-        status: status,
-        date: new Date().toISOString().split('T')[0]
-      };
-
-      referralGroups.push(newGroup);
-      localStorage.setItem('camilla_referrals', JSON.stringify(referralGroups));
-      
-      document.getElementById('ref-name').value = '';
-      document.getElementById('ref-link').value = '';
-      document.getElementById('ref-players-text').value = '';
-      closeAddReferralModal();
-      renderReferrals();
-    }
-
-    function deleteReferralGroup(id) {
-      if (confirm("Are you sure you want to delete this referral group?")) {
-        referralGroups = referralGroups.filter(g => g.id !== id);
-        localStorage.setItem('camilla_referrals', JSON.stringify(referralGroups));
-        renderReferrals();
-      }
-    }
-
-    function renderReferrals() {
+    function renderReferrals(referralGroups) {
       const grid = document.getElementById('referrals-grid');
       grid.innerHTML = '';
 
-      if (referralGroups.length === 0) {
-        grid.innerHTML = `<div class="col-span-2 glass-card p-8 rounded-2xl text-center text-gray-500 text-xs">No referral groups saved yet. Click "Add New Referral Group" above to start tracking.</div>`;
+      if (!referralGroups || referralGroups.length === 0) {
+        grid.innerHTML = `<div class="col-span-2 glass-card p-8 rounded-2xl text-center text-gray-500 text-xs">No referral groups synced yet in referrals.json. Use python manage_referrals.py to add referrals.</div>`;
         return;
       }
 
       referralGroups.forEach(group => {
-        let playersHtml = group.players.map(p => {
-          return `<a href="${p.link}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-emerald-400 border border-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center transition">
+        let playersHtml = (group.players || []).map(p => {
+          return `<a href="${p.link || '#'}" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-emerald-400 border border-gray-700 px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center transition">
             <i class="fa-brands fa-facebook text-blue-400 mr-1.5"></i>${p.name}
           </a>`;
         }).join('');
@@ -346,11 +225,10 @@
                     ${group.referrerLink && group.referrerLink !== '#' ? `<a href="${group.referrerLink}" target="_blank" class="text-amber-300 hover:underline flex items-center">${group.referrerName} <i class="fa-brands fa-facebook text-xs ml-1.5 text-blue-400"></i></a>` : group.referrerName}
                   </h3>
                 </div>
-                <button onclick="deleteReferralGroup(${group.id})" class="text-gray-500 hover:text-rose-400 transition p-1"><i class="fa-solid fa-trash text-xs"></i></button>
               </div>
 
               <div class="space-y-2 mb-4">
-                <p class="text-xs font-semibold text-gray-300">Referred Players (${group.players.length}):</p>
+                <p class="text-xs font-semibold text-gray-300">Referred Players (${(group.players || []).length}):</p>
                 <div class="flex flex-wrap gap-2">
                   ${playersHtml || '<span class="text-xs text-gray-500">No players listed</span>'}
                 </div>
@@ -359,7 +237,7 @@
 
             <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
               <span class="border px-2.5 py-1 rounded-full font-bold ${badgeColor}">${group.status}</span>
-              <span class="text-gray-500 text-[10px]">Added: ${group.date}</span>
+              <span class="text-gray-500 text-[10px]">Added: ${group.date || 'N/A'}</span>
             </div>
           </div>
         `;
