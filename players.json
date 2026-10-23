@@ -88,5 +88,16 @@
     "matchUsed": 2,
     "cashoutChannel": "CashApp",
     "notes": "New registration"
+  },
+  {
+    "id": "CS-1009",
+    "name": "Img Boyay",
+    "fbProfile": "https://www.facebook.com/share/1FXiE3fknx/",
+    "tier": "Bronze ",
+    "deposits": 11.0,
+    "cashouts": 0.0,
+    "matchUsed": 0,
+    "cashoutChannel": "Chime",
+    "notes": "New registration"
   }
 ]
