@@ -27,17 +27,23 @@
         🎃 Halloween Spooktacular 🎃
       </span>
       <h1 class="text-2xl font-black text-amber-400 mt-2">UNLUCKY 13 MYSTERY WHEEL</h1>
-      <p class="text-xs text-gray-400 mt-1">Spin to reveal your Halloween Deposit Match (40% to 100%)!</p>
+      <p class="text-xs text-gray-400 mt-1">Enter your admin passcode to unlock your 1-time spin!</p>
     </div>
 
     <!-- User Input Section -->
     <div id="username-step" class="space-y-3">
-      <div class="text-left">
-        <label class="block text-xs font-bold text-gray-300 mb-1">Enter Game Username / FB Name:</label>
-        <input type="text" id="player-username" placeholder="e.g. John32 or Sarah Jenkins" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white font-bold focus:outline-none focus:border-amber-400 transition">
+      <div class="text-left space-y-2">
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">Game Username / FB Name:</label>
+          <input type="text" id="player-username" placeholder="e.g. John32 or Sarah Jenkins" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-amber-400 transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">1-Time Spin Passcode:</label>
+          <input type="text" id="player-code" placeholder="e.g. CAMILLA-1011" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-amber-400 uppercase font-black tracking-wider focus:outline-none focus:border-amber-400 transition">
+        </div>
       </div>
-      <button onclick="startWheelSession()" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-extrabold py-3 rounded-xl text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center">
-        <i class="fa-solid fa-ghost mr-2"></i> Lock Username & Unlock Wheel
+      <button id="verify-btn" onclick="startWheelSession()" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-extrabold py-3 rounded-xl text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center mt-2">
+        <i class="fa-solid fa-key mr-2"></i> Verify Passcode & Unlock Wheel
       </button>
     </div>
 
@@ -66,12 +72,24 @@
 
     <!-- Rules Notice -->
     <div class="text-[10px] text-gray-500 pt-2 border-t border-gray-800/60">
-      *Limit 1 spin per player username during Halloween event. Bonuses range from 40% to 100% match on deposits.
+      *Requires a valid admin passcode. Limit 1 spin per passcode.
     </div>
   </div>
 
   <script>
-    // Clean Offers without number prefixes (#1, #2, etc.)
+    const validCodes = [
+      "CAMILLA-1011", "CAMILLA-1022", "CAMILLA-1033", "CAMILLA-1044", "CAMILLA-1055",
+      "CAMILLA-1066", "CAMILLA-1077", "CAMILLA-1088", "CAMILLA-1099", "CAMILLA-1100",
+      "CAMILLA-2011", "CAMILLA-2022", "CAMILLA-2033", "CAMILLA-2044", "CAMILLA-2055",
+      "CAMILLA-2066", "CAMILLA-2077", "CAMILLA-2088", "CAMILLA-2099", "CAMILLA-2200",
+      "CAMILLA-3011", "CAMILLA-3022", "CAMILLA-3033", "CAMILLA-3044", "CAMILLA-3055",
+      "CAMILLA-3066", "CAMILLA-3077", "CAMILLA-3088", "CAMILLA-3099", "CAMILLA-3300",
+      "CAMILLA-4011", "CAMILLA-4022", "CAMILLA-4033", "CAMILLA-4044", "CAMILLA-4055",
+      "CAMILLA-4066", "CAMILLA-4077", "CAMILLA-4088", "CAMILLA-4099", "CAMILLA-4400",
+      "CAMILLA-5011", "CAMILLA-5022", "CAMILLA-5033", "CAMILLA-5044", "CAMILLA-5055",
+      "CAMILLA-5066", "CAMILLA-5077", "CAMILLA-5088", "CAMILLA-5099", "CAMILLA-5500"
+    ];
+
     const slices = [
       { label: "40% MATCH", bonus: "40%" },
       { label: "50% MATCH", bonus: "50%" },
@@ -89,6 +107,7 @@
     ];
 
     let currentUsername = "";
+    let currentCode = "";
     let finalOutcome = null;
 
     function drawWheel() {
@@ -112,7 +131,6 @@
         ctx.strokeStyle = "#0b0f19";
         ctx.stroke();
 
-        // Draw Clean Offer Text without # numbers
         ctx.save();
         ctx.translate(160, 160);
         ctx.rotate(angle + arc / 2);
@@ -124,21 +142,57 @@
       }
     }
 
-    function startWheelSession() {
+    async function startWheelSession() {
       const usernameInput = document.getElementById("player-username").value.trim();
+      const codeInput = document.getElementById("player-code").value.trim().toUpperCase();
+
       if (!usernameInput) {
-        alert("Please enter your Game Username or Facebook Name to continue!");
+        alert("Please enter your Game Username or Facebook Name!");
         return;
       }
 
-      currentUsername = usernameInput.toLowerCase();
-
-      const spunPlayers = JSON.parse(localStorage.getItem("camilla_halloween_spun")) || {};
-      if (spunPlayers[currentUsername]) {
-        alert(`User "${usernameInput}" has already spun the Halloween wheel! Claim code: ${spunPlayers[currentUsername].code}`);
-        showAlreadySpun(spunPlayers[currentUsername]);
+      if (!codeInput) {
+        alert("Please enter your 1-Time Spin Passcode provided by the admin!");
         return;
       }
+
+      if (!validCodes.includes(codeInput)) {
+        alert("Invalid Passcode! Please message our page on Facebook/Telegram to get a valid spin code.");
+        return;
+      }
+
+      const verifyBtn = document.getElementById("verify-btn");
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Checking Passcode...`;
+
+      // 1. Check Global halloween.json on GitHub
+      try {
+        const response = await fetch('halloween.json?v=' + new Date().getTime());
+        if (response.ok) {
+          const burnedList = await response.json();
+          const burned = burnedList.find(item => item.passcode === codeInput);
+          if (burned) {
+            alert(`Passcode "${codeInput}" has ALREADY been used globally by ${burned.username}! Code burned.`);
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = `<i class="fa-solid fa-key mr-2"></i> Verify Passcode & Unlock Wheel`;
+            return;
+          }
+        }
+      } catch (err) {
+        console.log("Could not load halloween.json, checking local storage...");
+      }
+
+      // 2. Local Storage Backup Check
+      const usedCodes = JSON.parse(localStorage.getItem("camilla_used_codes")) || {};
+      if (usedCodes[codeInput]) {
+        alert(`Passcode "${codeInput}" has ALREADY been used on this device by ${usedCodes[codeInput].username}!`);
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = `<i class="fa-solid fa-key mr-2"></i> Verify Passcode & Unlock Wheel`;
+        return;
+      }
+
+      currentUsername = usernameInput;
+      currentCode = codeInput;
 
       document.getElementById("username-step").classList.add("hidden");
       document.getElementById("wheel-section").classList.remove("hidden");
@@ -151,36 +205,33 @@
       spinBtn.classList.add("opacity-50", "cursor-not-allowed");
 
       const wheel = document.getElementById("wheel");
-      
       const numSlices = slices.length;
       const sliceDeg = 360 / numSlices;
 
-      // Random winning index (0 to 12)
       const winningIndex = Math.floor(Math.random() * numSlices);
       finalOutcome = slices[winningIndex];
 
-      // Exact degree alignment to point to top arrow (270 degrees)
       const sliceCenterDeg = winningIndex * sliceDeg + (sliceDeg / 2);
       const stopDeg = (270 - sliceCenterDeg + 360) % 360;
-      
-      // Add 5 full rotations (1800 deg) for smooth spin animation
       const totalDegrees = 1800 + stopDeg;
 
       wheel.style.transform = `rotate(${totalDegrees}deg)`;
 
       setTimeout(() => {
-        const claimCode = `HALLOWEEN-${finalOutcome.bonus}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const claimCode = `HALLOWEEN-${finalOutcome.bonus}-${currentCode}`;
         const spinData = {
           username: currentUsername,
+          passcode: currentCode,
           bonus: finalOutcome.bonus,
           label: finalOutcome.label,
-          code: claimCode,
+          claimCode: claimCode,
           date: new Date().toISOString()
         };
 
-        const spunPlayers = JSON.parse(localStorage.getItem("camilla_halloween_spun")) || {};
-        spunPlayers[currentUsername] = spinData;
-        localStorage.setItem("camilla_halloween_spun", JSON.stringify(spunPlayers));
+        // Save local burn
+        const usedCodes = JSON.parse(localStorage.getItem("camilla_used_codes")) || {};
+        usedCodes[currentCode] = spinData;
+        localStorage.setItem("camilla_used_codes", JSON.stringify(usedCodes));
 
         displayResult(spinData);
       }, 4100);
@@ -191,20 +242,13 @@
       const resultBox = document.getElementById("result-box");
       resultBox.classList.remove("hidden");
       document.getElementById("result-text").innerText = `${spinData.label}`;
-      document.getElementById("result-sub").innerText = `Claim Code: ${spinData.code} for ${spinData.username}`;
-    }
-
-    function showAlreadySpun(spinData) {
-      document.getElementById("username-step").classList.add("hidden");
-      document.getElementById("wheel-section").classList.remove("hidden");
-      drawWheel();
-      displayResult(spinData);
+      document.getElementById("result-sub").innerText = `Claim Code: ${spinData.claimCode}`;
     }
 
     function copyAndClaim() {
-      const spunPlayers = JSON.parse(localStorage.getItem("camilla_halloween_spun")) || {};
-      const data = spunPlayers[currentUsername];
-      const claimText = `🎃 HALLOWEEN WHEEL CLAIM 🎃\nUsername: ${data.username}\nOutcome: ${data.label}\nClaim Code: ${data.code}\nReady to load my deposit match!`;
+      const usedCodes = JSON.parse(localStorage.getItem("camilla_used_codes")) || {};
+      const data = usedCodes[currentCode] || { username: currentUsername, label: finalOutcome.label, claimCode: `HALLOWEEN-${finalOutcome.bonus}-${currentCode}`, passcode: currentCode };
+      const claimText = `🎃 HALLOWEEN WHEEL CLAIM 🎃\nUsername: ${data.username}\nOutcome: ${data.label}\nClaim Code: ${data.claimCode}\nPasscode: ${data.passcode}\nReady to load my deposit match!`;
 
       navigator.clipboard.writeText(claimText);
       alert("Claim details copied to clipboard! Paste it directly to our Facebook Messenger or Telegram chat to claim your bonus!");
