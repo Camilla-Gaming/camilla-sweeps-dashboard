@@ -56,7 +56,7 @@
     <!-- Result Banner -->
     <div id="result-box" class="hidden p-5 bg-gradient-to-br from-amber-950/60 to-gray-900 border border-amber-500/50 rounded-2xl space-y-3">
       <span class="text-xs text-amber-400 uppercase font-bold tracking-wider">🎉 CONGRATULATIONS 🎉</span>
-      <h2 id="result-text" class="text-2xl font-black text-white">100% MATCH!</h2>
+      <h2 id="result-text" class="text-2xl font-black text-white">100% MATCH</h2>
       <p id="result-sub" class="text-xs text-gray-300">Your bonus code has been generated.</p>
 
       <button onclick="copyAndClaim()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold py-3 rounded-xl text-xs transition flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -71,33 +71,34 @@
   </div>
 
   <script>
-    // 13 Halloween Outcomes (40% up to 100% Jackpot)
+    // Clean Offers without number prefixes (#1, #2, etc.)
     const slices = [
-      { num: 1, label: "40% MATCH", bonus: "40%" },
-      { num: 2, label: "50% MATCH", bonus: "50%" },
-      { num: 3, label: "60% MATCH", bonus: "60%" },
-      { num: 4, label: "45% MATCH", bonus: "45%" },
-      { num: 5, label: "70% MATCH", bonus: "70%" },
-      { num: 6, label: "55% MATCH", bonus: "55%" },
-      { num: 7, label: "80% MATCH", bonus: "80%" },
-      { num: 8, label: "40% MATCH", bonus: "40%" },
-      { num: 9, label: "65% MATCH", bonus: "65%" },
-      { num: 10, label: "50% MATCH", bonus: "50%" },
-      { num: 11, label: "75% MATCH", bonus: "75%" },
-      { num: 12, label: "55% MATCH", bonus: "55%" },
-      { num: 13, label: "👑 100% JACKPOT!", bonus: "100%" }
+      { label: "40% MATCH", bonus: "40%" },
+      { label: "50% MATCH", bonus: "50%" },
+      { label: "60% MATCH", bonus: "60%" },
+      { label: "45% MATCH", bonus: "45%" },
+      { label: "70% MATCH", bonus: "70%" },
+      { label: "55% MATCH", bonus: "55%" },
+      { label: "80% MATCH", bonus: "80%" },
+      { label: "40% MATCH", bonus: "40%" },
+      { label: "65% MATCH", bonus: "65%" },
+      { label: "50% MATCH", bonus: "50%" },
+      { label: "75% MATCH", bonus: "75%" },
+      { label: "55% MATCH", bonus: "55%" },
+      { label: "👑 100% JACKPOT!", bonus: "100%" }
     ];
 
     let currentUsername = "";
     let finalOutcome = null;
 
-    // Draw Wheel Canvas
     function drawWheel() {
       const canvas = document.getElementById("wheel");
       const ctx = canvas.getContext("2d");
       const numSlices = slices.length;
       const arc = (2 * Math.PI) / numSlices;
       const colors = ["#1e293b", "#f59e0b", "#0f172a", "#d97706", "#334155"];
+
+      ctx.clearRect(0, 0, 320, 320);
 
       for (let i = 0; i < numSlices; i++) {
         const angle = i * arc;
@@ -111,14 +112,14 @@
         ctx.strokeStyle = "#0b0f19";
         ctx.stroke();
 
-        // Draw Text Labels
+        // Draw Clean Offer Text without # numbers
         ctx.save();
         ctx.translate(160, 160);
         ctx.rotate(angle + arc / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#ffffff";
         ctx.font = "bold 10px Inter, sans-serif";
-        ctx.fillText(`#${slices[i].num}: ${slices[i].label}`, 145, 4);
+        ctx.fillText(slices[i].label, 145, 4);
         ctx.restore();
       }
     }
@@ -132,7 +133,6 @@
 
       currentUsername = usernameInput.toLowerCase();
 
-      // Check if username already spun locally
       const spunPlayers = JSON.parse(localStorage.getItem("camilla_halloween_spun")) || {};
       if (spunPlayers[currentUsername]) {
         alert(`User "${usernameInput}" has already spun the Halloween wheel! Claim code: ${spunPlayers[currentUsername].code}`);
@@ -152,18 +152,23 @@
 
       const wheel = document.getElementById("wheel");
       
-      // Randomly choose winning slice (0 to 12)
-      const winningIndex = Math.floor(Math.random() * slices.length);
+      const numSlices = slices.length;
+      const sliceDeg = 360 / numSlices;
+
+      // Random winning index (0 to 12)
+      const winningIndex = Math.floor(Math.random() * numSlices);
       finalOutcome = slices[winningIndex];
 
-      const sliceArc = 360 / slices.length;
-      // Calculate rotation to align winning slice with top pointer
-      const targetDegree = 360 * 5 + (360 - (winningIndex * sliceArc + sliceArc / 2));
+      // Exact degree alignment to point to top arrow (270 degrees)
+      const sliceCenterDeg = winningIndex * sliceDeg + (sliceDeg / 2);
+      const stopDeg = (270 - sliceCenterDeg + 360) % 360;
+      
+      // Add 5 full rotations (1800 deg) for smooth spin animation
+      const totalDegrees = 1800 + stopDeg;
 
-      wheel.style.transform = `rotate(${targetDegree}deg)`;
+      wheel.style.transform = `rotate(${totalDegrees}deg)`;
 
       setTimeout(() => {
-        // Save spin result to prevent re-spins
         const claimCode = `HALLOWEEN-${finalOutcome.bonus}-${Math.floor(1000 + Math.random() * 9000)}`;
         const spinData = {
           username: currentUsername,
