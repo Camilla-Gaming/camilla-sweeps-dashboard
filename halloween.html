@@ -7,10 +7,10 @@
 
     <!-- Facebook / Open Graph Link Preview Meta Tags -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/halloween.html" />
+    <meta property="og:url" content="https://camilla-gaming.github.io/camilla-promos/halloween.html" />
     <meta property="og:title" content="Camilla Promos - Lucky 13 Halloween Mystery Wheel" />
     <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel to claim guaranteed deposit match bonuses from 40% up to 100%!" />
-    <meta property="og:image" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/preview.png" />
+    <meta property="og:image" content="https://camilla-gaming.github.io/camilla-promos/preview.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -141,7 +141,7 @@
         </div>
 
         <button id="spinBtn" onclick="spinWheel()" 
-            class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-4 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
+            class="bg-gradient-to-r fromamber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-4 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
             SPIN THE WHEEL!
         </button>
     </main>
@@ -168,6 +168,20 @@
     </div>
 
     <script>
+        // MASTER ACTIVE PASSCODES EMBEDDED DIRECTLY
+        const ACTIVE_CODES = [
+            "CAMILLA-1011", "CAMILLA-1022", "CAMILLA-1033", "CAMILLA-1044", "CAMILLA-1055",
+            "CAMILLA-1066", "CAMILLA-1077", "CAMILLA-1088", "CAMILLA-1099", "CAMILLA-1100",
+            "CAMILLA-2011", "CAMILLA-2022", "CAMILLA-2033", "CAMILLA-2044", "CAMILLA-2055",
+            "CAMILLA-2066", "CAMILLA-2077", "CAMILLA-2088", "CAMILLA-2099", "CAMILLA-2200",
+            "CAMILLA-3011", "CAMILLA-3022", "CAMILLA-3033", "CAMILLA-3044", "CAMILLA-3055",
+            "CAMILLA-3066", "CAMILLA-3077", "CAMILLA-3088", "CAMILLA-3099", "CAMILLA-3300",
+            "CAMILLA-4011", "CAMILLA-4022", "CAMILLA-4033", "CAMILLA-4044", "CAMILLA-4055",
+            "CAMILLA-4066", "CAMILLA-4077", "CAMILLA-4088", "CAMILLA-4099", "CAMILLA-4400",
+            "CAMILLA-5011", "CAMILLA-5022", "CAMILLA-5033", "CAMILLA-5044", "CAMILLA-5055",
+            "CAMILLA-5066", "CAMILLA-5077", "CAMILLA-5088", "CAMILLA-5099", "CAMILLA-5500"
+        ];
+
         const slices = [
             "40% MATCH", "50% MATCH", "60% MATCH", "40% MATCH",
             "70% MATCH", "50% MATCH", "100% JACKPOT", "40% MATCH",
@@ -184,12 +198,6 @@
         let currentRotation = 0;
         let isSpinning = false;
 
-        // Check if passcode has already been locally burned
-        window.addEventListener('DOMContentLoaded', () => {
-            const usedCodes = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
-            // UI state ready for passcode entry
-        });
-
         function drawWheel() {
             const canvas = document.getElementById("wheel");
             const ctx = canvas.getContext("2d");
@@ -205,7 +213,6 @@
             for (let i = 0; i < numSlices; i++) {
                 const angle = i * sliceAngle;
                 
-                // Draw slice background
                 ctx.beginPath();
                 ctx.moveTo(radius, radius);
                 ctx.arc(radius, radius, radius - 6, angle, angle + sliceAngle);
@@ -215,7 +222,6 @@
                 ctx.strokeStyle = "#f59e0b";
                 ctx.stroke();
 
-                // Draw Text
                 ctx.save();
                 ctx.translate(radius, radius);
                 ctx.rotate(angle + sliceAngle / 2);
@@ -229,7 +235,7 @@
             }
         }
 
-        async function verifyPasscode() {
+        function verifyPasscode() {
             const input = document.getElementById('passcodeInput').value.trim().toUpperCase();
             const errorEl = document.getElementById('authError');
             errorEl.classList.add('hidden');
@@ -239,30 +245,21 @@
                 return;
             }
 
-            // Local storage check
+            // Local storage single-use burn check
             const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
             if (usedLocally.includes(input)) {
                 showError("This passcode has already been used on this device.");
                 return;
             }
 
-            try {
-                // Fetch global database to verify code status
-                const res = await fetch('https://camilla-gaming.github.io/camilla-sweeps-dashboard/halloween.json?v=' + Date.now());
-                const data = await res.json();
-
-                if (data.active_codes && data.active_codes.includes(input)) {
-                    activeCode = input;
-                    document.getElementById('authBox').classList.add('hidden');
-                    document.getElementById('gameBox').classList.remove('hidden');
-                    drawWheel();
-                } else if (data.used_codes && data.used_codes.includes(input)) {
-                    showError("This passcode has already been redeemed.");
-                } else {
-                    showError("Invalid passcode. Please check with support.");
-                }
-            } catch (err) {
-                showError("Error verifying passcode. Please try again.");
+            // Direct local array check (100% offline & in-app browser safe)
+            if (ACTIVE_CODES.includes(input)) {
+                activeCode = input;
+                document.getElementById('authBox').classList.add('hidden');
+                document.getElementById('gameBox').classList.remove('hidden');
+                drawWheel();
+            } else {
+                showError("Invalid passcode. Please check with support.");
             }
         }
 
@@ -280,7 +277,6 @@
             const numSlices = slices.length;
             const sliceAngle = 360 / numSlices;
             
-            // Random spin amount (at least 5 full rotations)
             const winningIndex = Math.floor(Math.random() * numSlices);
             const targetSliceDegree = 360 - (winningIndex * sliceAngle) - (sliceAngle / 2);
             const totalRotation = currentRotation + (360 * 5) + (targetSliceDegree - (currentRotation % 360));
@@ -292,17 +288,15 @@
             setTimeout(() => {
                 isSpinning = false;
                 
-                // Burn the code locally
+                // Burn the code in localStorage
                 const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
                 usedLocally.push(activeCode);
                 localStorage.setItem('used_halloween_codes', JSON.stringify(usedLocally));
 
-                // Display win modal
                 const prize = slices[winningIndex];
                 document.getElementById('prizeDisplay').textContent = prize;
                 document.getElementById('winModal').classList.remove('hidden');
 
-                // Trigger confetti celebration
                 confetti({
                     particleCount: 120,
                     spread: 80,
