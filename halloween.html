@@ -34,12 +34,8 @@
     <div id="username-step" class="space-y-3">
       <div class="text-left space-y-2">
         <div>
-          <label class="block text-xs font-bold text-gray-300 mb-1">Game Username / FB Name:</label>
-          <input type="text" id="player-username" placeholder="e.g. John32 or Sarah Jenkins" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-amber-400 transition">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-gray-300 mb-1">1-Time Spin Passcode:</label>
-          <input type="text" id="player-code" placeholder="e.g. CAMILLA-1011" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-amber-400 uppercase font-black tracking-wider focus:outline-none focus:border-amber-400 transition">
+          <label class="block text-xs font-bold text-gray-300 mb-1">Spin Passcode:</label>
+          <input type="text" id="player-code" placeholder="" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-amber-400 uppercase font-black tracking-wider focus:outline-none focus:border-amber-400 transition">
         </div>
       </div>
       <button id="verify-btn" onclick="startWheelSession()" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-extrabold py-3 rounded-xl text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center mt-2">
@@ -106,7 +102,6 @@
       { label: "👑 100% JACKPOT!", bonus: "100%" }
     ];
 
-    let currentUsername = "";
     let currentCode = "";
     let finalOutcome = null;
 
@@ -143,16 +138,10 @@
     }
 
     async function startWheelSession() {
-      const usernameInput = document.getElementById("player-username").value.trim();
       const codeInput = document.getElementById("player-code").value.trim().toUpperCase();
 
-      if (!usernameInput) {
-        alert("Please enter your Game Username or Facebook Name!");
-        return;
-      }
-
       if (!codeInput) {
-        alert("Please enter your 1-Time Spin Passcode provided by the admin!");
+        alert("Please enter your Spin Passcode provided by the admin!");
         return;
       }
 
@@ -172,7 +161,7 @@
           const burnedList = await response.json();
           const burned = burnedList.find(item => item.passcode === codeInput);
           if (burned) {
-            alert(`Passcode "${codeInput}" has ALREADY been used globally by ${burned.username}! Code burned.`);
+            alert(`Passcode "${codeInput}" has ALREADY been used globally! Code burned.`);
             verifyBtn.disabled = false;
             verifyBtn.innerHTML = `<i class="fa-solid fa-key mr-2"></i> Verify Passcode & Unlock Wheel`;
             return;
@@ -185,13 +174,12 @@
       // 2. Local Storage Backup Check
       const usedCodes = JSON.parse(localStorage.getItem("camilla_used_codes")) || {};
       if (usedCodes[codeInput]) {
-        alert(`Passcode "${codeInput}" has ALREADY been used on this device by ${usedCodes[codeInput].username}!`);
+        alert(`Passcode "${codeInput}" has ALREADY been used on this device!`);
         verifyBtn.disabled = false;
         verifyBtn.innerHTML = `<i class="fa-solid fa-key mr-2"></i> Verify Passcode & Unlock Wheel`;
         return;
       }
 
-      currentUsername = usernameInput;
       currentCode = codeInput;
 
       document.getElementById("username-step").classList.add("hidden");
@@ -220,7 +208,6 @@
       setTimeout(() => {
         const claimCode = `HALLOWEEN-${finalOutcome.bonus}-${currentCode}`;
         const spinData = {
-          username: currentUsername,
           passcode: currentCode,
           bonus: finalOutcome.bonus,
           label: finalOutcome.label,
@@ -247,8 +234,8 @@
 
     function copyAndClaim() {
       const usedCodes = JSON.parse(localStorage.getItem("camilla_used_codes")) || {};
-      const data = usedCodes[currentCode] || { username: currentUsername, label: finalOutcome.label, claimCode: `HALLOWEEN-${finalOutcome.bonus}-${currentCode}`, passcode: currentCode };
-      const claimText = `🎃 HALLOWEEN WHEEL CLAIM 🎃\nUsername: ${data.username}\nOutcome: ${data.label}\nClaim Code: ${data.claimCode}\nPasscode: ${data.passcode}\nReady to load my deposit match!`;
+      const data = usedCodes[currentCode] || { label: finalOutcome.label, claimCode: `HALLOWEEN-${finalOutcome.bonus}-${currentCode}`, passcode: currentCode };
+      const claimText = `🎃 HALLOWEEN WHEEL CLAIM 🎃\nOutcome: ${data.label}\nClaim Code: ${data.claimCode}\nPasscode: ${data.passcode}\nReady to load my deposit match!`;
 
       navigator.clipboard.writeText(claimText);
       alert("Claim details copied to clipboard! Paste it directly to our Facebook Messenger or Telegram chat to claim your bonus!");
