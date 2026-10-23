@@ -316,21 +316,30 @@
             }, 4000);
         }
 
-        function copyCodeAndMessage() {
+                function copyCodeAndMessage() {
             const code = activeCode;
             const prize = document.getElementById('prizeDisplay').textContent;
             const messageText = `Hey Camilla Sweeps! I spun the Halloween Mystery Wheel with code ${code} and won ${prize}!`;
 
+            // Copy winning message to user's clipboard
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(messageText);
+            } else {
+                const tempInput = document.createElement("textarea");
+                tempInput.value = messageText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
             }
 
             const btn = document.getElementById('copyClaimBtn');
-            btn.innerHTML = "<span>✅ CODE COPIED! REDIRECTING...</span>";
+            btn.innerHTML = "<span>✅ CODE COPIED! OPENING MESSENGER...</span>";
             
+            // Redirect directly to your Facebook Page Messenger using exact Page ID
             setTimeout(() => {
-                window.location.href = "https://m.me/camillasweeps";
-            }, 1000);
+                window.location.href = "https://m.me/103356144350019";
+            }, 800);
         }
     </script>
 </body>
