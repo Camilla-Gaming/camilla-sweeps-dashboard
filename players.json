@@ -85,7 +85,7 @@
     "tier": "Silver",
     "deposits": 18.98,
     "cashouts": 0.0,
-    "matchUsed": 2,
+    "matchUsed": 4,
     "cashoutChannel": "CashApp",
     "notes": "New registration"
   },
@@ -96,7 +96,7 @@
     "tier": "Bronze ",
     "deposits": 11.0,
     "cashouts": 0.0,
-    "matchUsed": 0,
+    "matchUsed": 1,
     "cashoutChannel": "Chime",
     "notes": "New registration"
   }
