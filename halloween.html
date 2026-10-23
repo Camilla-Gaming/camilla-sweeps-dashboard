@@ -248,7 +248,7 @@
 
             try {
                 // Fetch global database to verify code status
-                const res = await fetch('halloween.json?cache=' + Date.now());
+                const res = await fetch('https://camilla-gaming.github.io/camilla-sweeps-dashboard/halloween.json?v=' + Date.now());
                 const data = await res.json();
 
                 if (data.active_codes && data.active_codes.includes(input)) {
