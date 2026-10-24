@@ -99,5 +99,16 @@
     "matchUsed": 1,
     "cashoutChannel": "Chime",
     "notes": "New registration"
+  },
+  {
+    "id": "CS-1010",
+    "name": "William McClary",
+    "fbProfile": "https://www.facebook.com/william.mcclary.2025",
+    "tier": "Bronze",
+    "deposits": 0.0,
+    "cashouts": 0.0,
+    "matchUsed": 1,
+    "cashoutChannel": "Apple Pay",
+    "notes": "New registration"
   }
 ]
