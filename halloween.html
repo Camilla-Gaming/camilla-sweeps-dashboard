@@ -27,6 +27,8 @@
             background: #0d0a12;
             color: #fff;
             overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .title-font {
@@ -35,9 +37,10 @@
 
         .wheel-container {
             position: relative;
-            width: 340px;
-            height: 340px;
+            width: 320px;
+            height: 320px;
             margin: 0 auto;
+            touch-action: none;
         }
 
         @media (min-width: 640px) {
@@ -53,8 +56,12 @@
             border-radius: 50%;
             border: 6px solid #f59e0b;
             box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), inset 0 0 15px rgba(0,0,0,0.8);
-            /* Extended animation time to 7 seconds */
             transition: transform 7s cubic-bezier(0.12, 0.99, 0.18, 1);
+            cursor: grab;
+        }
+
+        #wheel:active {
+            cursor: grabbing;
         }
 
         .pointer {
@@ -86,12 +93,13 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
+            pointer-events: none;
         }
 
         .glow-box {
-            background: rgba(23, 15, 38, 0.85);
+            background: rgba(23, 15, 38, 0.92);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.4);
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(120, 53, 15, 0.3);
         }
     </style>
@@ -106,34 +114,14 @@
         <h1 class="title-font text-3xl sm:text-4xl font-black text-amber-400 tracking-wide uppercase drop-shadow-lg">
             LUCKY 13 MYSTERY WHEEL
         </h1>
-        <p class="text-xs sm:text-sm text-gray-400 mt-1">
-            Enter your admin passcode to unlock your 1-time spin!
+        <p class="text-xs sm:text-sm text-gray-400 mt-1" id="statusHeaderMsg">
+            Guaranteed deposit match bonuses from 40% up to 100%!
         </p>
     </header>
 
-    <!-- Passcode Auth Box -->
-    <div id="authBox" class="glow-box rounded-2xl p-6 w-full max-w-md mb-6">
-        <label class="block text-xs font-semibold text-amber-300 uppercase tracking-wider mb-2">
-            Spin Passcode:
-        </label>
-        <input type="text" id="passcodeInput" 
-            class="w-full bg-slate-900/90 border border-slate-700 text-amber-400 text-center font-bold tracking-widest text-lg rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 transition-all uppercase mb-4" 
-            placeholder="" autocomplete="off" />
-        
-        <button id="authBtn" onclick="verifyPasscode()" 
-            class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black tracking-wide py-3 px-6 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center space-x-2">
-            <span>🔑 Verify Passcode & Unlock Wheel</span>
-        </button>
-
-        <p id="authError" class="text-red-400 text-xs font-semibold text-center mt-3 hidden"></p>
-        <p class="text-[10px] text-gray-500 text-center mt-3 italic">
-            *Requires a valid admin passcode. Limit 1 spin per passcode.
-        </p>
-    </div>
-
-    <!-- Main Game Wheel (Hidden initially) -->
-    <main id="gameBox" class="hidden flex flex-col items-center space-y-6">
-        <div class="wheel-container">
+    <!-- Main Game Wheel Container (Visible immediately on landing page) -->
+    <main class="flex flex-col items-center space-y-6">
+        <div class="wheel-container" id="wheelBox">
             <div class="pointer"></div>
             <canvas id="wheel"></canvas>
             <div class="center-hub">
@@ -141,11 +129,44 @@
             </div>
         </div>
 
-        <button id="spinBtn" onclick="spinWheel()" 
+        <button id="spinBtn" onclick="handleSpinTrigger()" 
             class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-4 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
             SPIN THE WHEEL!
         </button>
+
+        <p class="text-xs text-amber-300/80 italic text-center">
+            👉 Swipe the wheel or click spin to unlock with your passcode!
+        </p>
     </main>
+
+    <!-- Passcode Verification Modal -->
+    <div id="passcodeModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+        <div class="glow-box rounded-3xl p-6 sm:p-8 max-w-md w-full border-2 border-amber-500/80 relative">
+            <button onclick="closePasscodeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold">✕</button>
+            
+            <div class="text-center mb-4">
+                <span class="text-3xl">🔑</span>
+                <h2 class="title-font text-2xl font-black text-amber-400 uppercase tracking-wide mt-2">Enter Passcode</h2>
+                <p class="text-xs text-gray-300 mt-1">Please enter your single-use spin passcode to unlock your wheel spin!</p>
+            </div>
+
+            <div class="mb-4">
+                <input type="text" id="passcodeInput" 
+                    class="w-full bg-slate-900/90 border border-slate-700 text-amber-400 text-center font-bold tracking-widest text-lg rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 transition-all uppercase" 
+                    placeholder="CAMILLA-XXXX" autocomplete="off" />
+            </div>
+
+            <button id="authBtn" onclick="verifyPasscode()" 
+                class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black tracking-wide py-3 px-6 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center space-x-2">
+                <span>🔑 VERIFY & SPIN NOW</span>
+            </button>
+
+            <p id="authError" class="text-red-400 text-xs font-semibold text-center mt-3 hidden"></p>
+            <p class="text-[10px] text-gray-500 text-center mt-3 italic">
+                *Don't have a passcode? Message Camilla Sweeps on Facebook to receive yours!
+            </p>
+        </div>
+    </div>
 
     <!-- Win Result Modal -->
     <div id="winModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
@@ -201,10 +222,14 @@
         ];
 
         let activeCode = "";
+        let isVerified = false;
         let currentRotation = 0;
         let isSpinning = false;
+        let spinSpeedMultiplier = 1;
+        let spinTimer = null;
+        let winningIndex = 0;
 
-        // Audio Context setup for smooth ticking sound effect
+        // Audio Context setup
         let audioCtx;
         
         function playTickSound() {
@@ -226,15 +251,13 @@
                 gain.connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.04);
-            } catch (e) {
-                // Audio fallback gracefully handled
-            }
+            } catch (e) {}
         }
 
         function playWinFanfare() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const notes = [261.63, 329.63, 392.00, 523.25]; // C E G C
+                const notes = [261.63, 329.63, 392.00, 523.25];
                 notes.forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -287,6 +310,15 @@
             }
         }
 
+        function openPasscodeModal() {
+            document.getElementById('passcodeModal').classList.remove('hidden');
+            document.getElementById('passcodeInput').focus();
+        }
+
+        function closePasscodeModal() {
+            document.getElementById('passcodeModal').classList.add('hidden');
+        }
+
         function verifyPasscode() {
             const input = document.getElementById('passcodeInput').value.trim().toUpperCase();
             const errorEl = document.getElementById('authError');
@@ -305,9 +337,10 @@
 
             if (ACTIVE_CODES.includes(input)) {
                 activeCode = input;
-                document.getElementById('authBox').classList.add('hidden');
-                document.getElementById('gameBox').classList.remove('hidden');
-                drawWheel();
+                isVerified = true;
+                closePasscodeModal();
+                document.getElementById('statusHeaderMsg').textContent = `Passcode ${activeCode} verified! Ready to spin!`;
+                executeSpin();
             } else {
                 showError("Invalid passcode. Please check with support.");
             }
@@ -319,58 +352,127 @@
             errorEl.classList.remove('hidden');
         }
 
-        function spinWheel() {
+        function handleSpinTrigger() {
+            if (!isVerified) {
+                openPasscodeModal();
+                return;
+            }
+
+            if (isSpinning) {
+                accelerateOrStopSpin();
+            } else {
+                executeSpin();
+            }
+        }
+
+        function executeSpin() {
             if (isSpinning) return;
             isSpinning = true;
-            document.getElementById('spinBtn').disabled = true;
 
             const numSlices = slices.length;
             const sliceDegree = 360 / numSlices;
-            
-            const winningIndex = Math.floor(Math.random() * numSlices);
+            winningIndex = Math.floor(Math.random() * numSlices);
             
             const targetSliceCenter = (winningIndex * sliceDegree) + (sliceDegree / 2);
             const degreeToRotate = 270 - targetSliceCenter;
             
-            const finalRotation = currentRotation + 3600 + ((degreeToRotate - (currentRotation % 360) + 360) % 360);
+            const extraRotations = 3600 * spinSpeedMultiplier;
+            const finalRotation = currentRotation + extraRotations + ((degreeToRotate - (currentRotation % 360) + 360) % 360);
             
             currentRotation = finalRotation;
             const wheel = document.getElementById('wheel');
+            const spinDuration = Math.max(3, 7 / spinSpeedMultiplier);
+            wheel.style.transition = `transform ${spinDuration}s cubic-bezier(0.12, 0.99, 0.18, 1)`;
             wheel.style.transform = `rotate(${finalRotation}deg)`;
 
             let currentTick = 0;
-            const totalTicks = 45;
+            const totalTicks = 40;
             function scheduleNextTick() {
-                if (currentTick < totalTicks) {
+                if (currentTick < totalTicks && isSpinning) {
                     playTickSound();
                     currentTick++;
-                    let delay = 80 + Math.pow(currentTick / totalTicks, 3) * 350;
+                    let delay = (80 + Math.pow(currentTick / totalTicks, 3) * 350) / spinSpeedMultiplier;
                     setTimeout(scheduleNextTick, delay);
                 }
             }
             scheduleNextTick();
 
-            setTimeout(() => {
-                isSpinning = false;
-                
-                const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
-                usedLocally.push(activeCode);
-                localStorage.setItem('used_halloween_codes', JSON.stringify(usedLocally));
-
-                const prize = slices[winningIndex];
-                document.getElementById('prizeDisplay').textContent = prize;
-                document.getElementById('claimedCodeDisplay').textContent = activeCode;
-                document.getElementById('winModal').classList.remove('hidden');
-
-                playWinFanfare();
-
-                confetti({
-                    particleCount: 120,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-            }, 7000);
+            clearTimeout(spinTimer);
+            spinTimer = setTimeout(() => {
+                finishSpin();
+            }, spinDuration * 1000);
         }
+
+        function accelerateOrStopSpin() {
+            spinSpeedMultiplier += 0.5;
+            const wheel = document.getElementById('wheel');
+            wheel.style.transition = `transform 1.5s ease-out`;
+            clearTimeout(spinTimer);
+            spinTimer = setTimeout(() => {
+                finishSpin();
+            }, 1500);
+        }
+
+        function finishSpin() {
+            if (!isSpinning) return;
+            isSpinning = false;
+            spinSpeedMultiplier = 1;
+
+            const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
+            usedLocally.push(activeCode);
+            localStorage.setItem('used_halloween_codes', JSON.stringify(usedLocally));
+
+            const prize = slices[winningIndex];
+            document.getElementById('prizeDisplay').textContent = prize;
+            document.getElementById('claimedCodeDisplay').textContent = activeCode;
+            document.getElementById('winModal').classList.remove('hidden');
+
+            playWinFanfare();
+
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+        }
+
+        // Swipe & Touch Drag Controls to Spin
+        let startY = 0;
+        let isDragging = false;
+        const wheelCanvas = document.getElementById('wheel');
+
+        wheelCanvas.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+        }, { passive: true });
+
+        wheelCanvas.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            const endY = e.changedTouches[0].clientY;
+            const deltaY = Math.abs(endY - startY);
+            if (deltaY > 30) {
+                handleSpinTrigger();
+            } else if (isSpinning) {
+                accelerateOrStopSpin();
+            }
+        }, { passive: true });
+
+        wheelCanvas.addEventListener('mousedown', (e) => {
+            startY = e.clientY;
+            isDragging = true;
+        });
+
+        wheelCanvas.addEventListener('mouseup', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            const deltaY = Math.abs(e.clientY - startY);
+            if (deltaY > 20) {
+                handleSpinTrigger();
+            } else if (isSpinning) {
+                accelerateOrStopSpin();
+            }
+        });
 
         function copyCodeAndMessage() {
             const code = activeCode;
@@ -395,6 +497,11 @@
                 window.location.href = "https://m.me/103356144350019";
             }, 800);
         }
+
+        // Draw wheel immediately on load
+        window.onload = function() {
+            drawWheel();
+        };
     </script>
 </body>
 </html>
