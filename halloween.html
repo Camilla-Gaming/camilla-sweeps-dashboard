@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camilla Promos - Lucky 13 Halloween Mystery Wheel & Scratch</title>
+    <title>Camilla Promos - Lucky 13 Halloween Mystery Wheel & Slots</title>
 
     <!-- Facebook / Open Graph Link Preview Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/halloween.html" />
     <meta property="og:title" content="Camilla Promos - Lucky 13 Halloween Mystery Wheel" />
-    <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel & Scratch for guaranteed deposit match bonuses!" />
+    <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel & Play Halloween Slots for guaranteed deposit match bonuses!" />
     <meta property="og:image" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/preview.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -24,15 +24,33 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: #0d0a12;
+            background: radial-gradient(circle at center, #1a0b2e 0%, #0d0a12 100%);
             color: #fff;
             overflow-x: hidden;
             user-select: none;
             -webkit-user-select: none;
+            min-height: 100vh;
         }
 
         .title-font {
             font-family: 'Cinzel', serif;
+        }
+
+        /* Ambient Floating Embers */
+        .ambient-particle {
+            position: fixed;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.8) 0%, rgba(239, 68, 68, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatUp 8s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
 
         /* --- Arcade / Casino Wheel Outer Ring & Bulb Styling --- */
@@ -46,6 +64,7 @@
             background: radial-gradient(circle, #2a1506 0%, #0d0a12 100%);
             border: 4px solid #f59e0b;
             box-shadow: 0 0 35px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(0,0,0,0.9);
+            z-index: 10;
         }
 
         @media (min-width: 640px) {
@@ -162,16 +181,42 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(120, 53, 15, 0.3);
         }
 
-        #scratchCanvas {
-            touch-action: none;
-            cursor: crosshair;
+        /* --- Slot Machine Reel Styles --- */
+        .slot-reel {
+            background: radial-gradient(circle, #1e1b2e 0%, #09060f 100%);
+            border: 2px solid rgba(245, 158, 11, 0.6);
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9), 0 0 10px rgba(245, 158, 11, 0.3);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 75px;
+            border-radius: 12px;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+            transition: transform 0.1s ease-in-out;
+        }
+
+        .slot-spinning {
+            animation: slotBlur 0.1s infinite linear;
+        }
+
+        @keyframes slotBlur {
+            0% { transform: translateY(-5px); opacity: 0.7; filter: blur(1px); }
+            50% { transform: translateY(5px); opacity: 0.7; filter: blur(1px); }
+            100% { transform: translateY(-5px); opacity: 0.7; filter: blur(1px); }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4">
+<body class="min-h-screen flex flex-col items-center justify-between p-4 relative">
+
+    <!-- Ambient Background Floating Particles -->
+    <div class="ambient-particle" style="width: 8px; height: 8px; left: 10%; animation-duration: 7s;"></div>
+    <div class="ambient-particle" style="width: 12px; height: 12px; left: 30%; animation-duration: 9s;"></div>
+    <div class="ambient-particle" style="width: 6px; height: 6px; left: 70%; animation-duration: 6s;"></div>
+    <div class="ambient-particle" style="width: 10px; height: 10px; left: 85%; animation-duration: 11s;"></div>
 
     <!-- Header Section -->
-    <header class="text-center mb-4 max-w-xl w-full">
+    <header class="text-center mb-4 max-w-xl w-full z-10">
         <span class="inline-block bg-amber-500/20 text-amber-400 border border-amber-500/40 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-2">
             🎃 HALLOWEEN SPOOKTACULAR 🎃
         </span>
@@ -194,8 +239,8 @@
         </div>
     </header>
 
-    <!-- Main Game Section (Wheel with Arcade Light Ring + Scratch Card) -->
-    <main class="flex flex-col items-center space-y-6 w-full max-w-md my-auto">
+    <!-- Main Game Section (Wheel + Slot Machine Bonus Game) -->
+    <main class="flex flex-col items-center space-y-6 w-full max-w-md my-auto z-10">
         
         <!-- Arcade Light Bulbs Frame Wrapper -->
         <div class="arcade-casing">
@@ -223,35 +268,39 @@
         <!-- Divider -->
         <div class="w-full h-[1px] bg-amber-500/30 my-2"></div>
 
-        <!-- Mystery Scratch-Off Section -->
+        <!-- Halloween Slot Machine Mini-Game Section -->
         <div class="glow-box w-full rounded-2xl p-4 text-center border border-amber-500/50">
-            <h3 class="title-font text-lg font-black text-amber-400 uppercase tracking-wide">👻 BONUS SCRATCH CARD</h3>
-            <p class="text-[11px] text-gray-300 mt-1 mb-3">Scratch to reveal an extra instant prize or reward!</p>
+            <h3 class="title-font text-lg font-black text-amber-400 uppercase tracking-wide">🎰 HALLOWEEN BONUS SLOTS</h3>
+            <p class="text-[11px] text-gray-300 mt-1 mb-3">Spin the reels to win instant freeplay or extra match bonuses!</p>
             
-            <div id="scratchContainer" class="relative w-full h-32 rounded-xl overflow-hidden bg-slate-900 border-2 border-amber-500/40 flex items-center justify-center">
-                <div id="scratchPrizeText" class="absolute inset-0 flex flex-col items-center justify-center p-2 text-center">
-                    <span class="text-2xl mb-1">🎁</span>
-                    <span id="scratchResultLabel" class="text-sm font-black text-amber-300 uppercase tracking-wide">Enter Username Below to Scratch!</span>
-                </div>
-                <canvas id="scratchCanvas" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
+            <!-- 3 Slot Reels Display -->
+            <div class="grid grid-cols-3 gap-2 mb-3">
+                <div id="reel1" class="slot-reel">🎃</div>
+                <div id="reel2" class="slot-reel">🎁</div>
+                <div id="reel3" class="slot-reel">⚡</div>
             </div>
 
-            <!-- Username Input for Scratch -->
-            <div id="scratchAuthBox" class="mt-3 flex space-x-2">
+            <!-- Slot Status / Result Message -->
+            <div id="slotMsgBox" class="text-xs font-bold text-amber-300 mb-3 min-h-[1.5rem] flex items-center justify-center bg-amber-500/10 rounded-xl border border-amber-500/30 p-2">
+                <span id="slotResultLabel">Enter Username Below to Spin Slots!</span>
+            </div>
+
+            <!-- Username Input for Slots -->
+            <div id="slotAuthBox" class="flex space-x-2">
                 <input type="text" id="gameUsernameInput" 
                     class="w-full bg-slate-900/90 border border-slate-700 text-amber-400 text-center font-bold text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-500 uppercase" 
                     placeholder="ENTER GAME USERNAME" autocomplete="off" />
-                <button onclick="unlockScratchCard()" 
-                    class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-md whitespace-nowrap">
-                    UNLOCK
+                <button onclick="unlockAndSpinSlots()" 
+                    class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl transition-all shadow-md whitespace-nowrap">
+                    SPIN SLOTS
                 </button>
             </div>
-            <p id="scratchError" class="text-red-400 text-[10px] font-semibold mt-1 hidden"></p>
+            <p id="slotError" class="text-red-400 text-[10px] font-semibold mt-2 hidden"></p>
         </div>
     </main>
 
     <!-- Footer Trust Badge -->
-    <footer class="text-center text-[11px] text-gray-400 mt-4">
+    <footer class="text-center text-[11px] text-gray-400 mt-4 z-10">
         ⚡ 24/7 Instant Loads & Cashouts • Official Camilla Sweeps Event
     </footer>
 
@@ -351,7 +400,7 @@
             if (!ring) return;
             ring.innerHTML = '';
             const totalBulbs = 20;
-            const radiusPercent = 48; // Position bulbs along outer edge
+            const radiusPercent = 48;
 
             for (let i = 0; i < totalBulbs; i++) {
                 const angle = (i * (360 / totalBulbs)) * (Math.PI / 180);
@@ -596,10 +645,13 @@
             });
         }
 
-        // --- SCRATCH CARD LOGIC (6-Hour Cooldown, 50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
-        function unlockScratchCard() {
+        // --- HALLOWEEN BONUS SLOT MACHINE LOGIC (6-Hour Cooldown, 50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
+        const slotSymbols = ["🎃", "👻", "💀", "🎁", "⚡", "💎"];
+
+        function unlockAndSpinSlots() {
             const usernameInput = document.getElementById('gameUsernameInput').value.trim();
-            const errEl = document.getElementById('scratchError');
+            const errEl = document.getElementById('slotError');
+            const msgLabel = document.getElementById('slotResultLabel');
             errEl.classList.add('hidden');
 
             if (!usernameInput) {
@@ -616,102 +668,83 @@
             }
 
             // Check 6-Hour Cooldown Timer
-            const lastScratchedTime = localStorage.getItem('halloween_scratch_time');
+            const lastSpinsTime = localStorage.getItem('halloween_slot_time');
             const cooldownHours = 6;
             
-            if (lastScratchedTime) {
-                const hoursPassed = (new Date().getTime() - parseInt(lastScratchedTime)) / (1000 * 60 * 60);
+            if (lastSpinsTime) {
+                const hoursPassed = (new Date().getTime() - parseInt(lastSpinsTime)) / (1000 * 60 * 60);
                 if (hoursPassed < cooldownHours) {
                     const hoursLeft = Math.ceil(cooldownHours - hoursPassed);
-                    errEl.textContent = `Cooldown active! You can try scratching again in about ${hoursLeft} hour(s).`;
+                    errEl.textContent = `Cooldown active! You can spin the slots again in about ${hoursLeft} hour(s).`;
                     errEl.classList.remove('hidden');
                     return;
                 }
             }
 
-            document.getElementById('scratchAuthBox').classList.add('hidden');
-            
+            document.getElementById('slotAuthBox').classList.add('hidden');
+            msgLabel.textContent = "🎰 SPINNING REELS...";
+
+            const r1 = document.getElementById('reel1');
+            const r2 = document.getElementById('reel2');
+            const r3 = document.getElementById('reel3');
+
+            r1.classList.add('slot-spinning');
+            r2.classList.add('slot-spinning');
+            r3.classList.add('slot-spinning');
+
+            // Determine outcome based on weighted probabilities (50% Empty, 25% Freeplay, 25% Extra Match)
             const rand = Math.random() * 100;
-            let scratchOutcome = "";
+            let finalSymbols = [];
+            let slotOutcome = "";
+
             if (rand < 50) {
-                scratchOutcome = "NO REWARD (EMPTY BOX)";
+                // Empty / No reward (3 non-matching spooky symbols)
+                slotOutcome = "NO REWARD (TRY AGAIN LATER)";
+                finalSymbols = ["🎃", "👻", "💀"];
             } else if (rand < 75) {
-                scratchOutcome = "$5 INSTANT FREEPLAY";
+                // $5 Instant Freeplay (3 matching gift boxes)
+                slotOutcome = "$5 INSTANT FREEPLAY";
+                finalSymbols = ["🎁", "🎁", "🎁"];
             } else {
-                scratchOutcome = "50% EXTRA DEPOSIT MATCH";
+                // 50% Extra Deposit Match (3 matching lightning bolts)
+                slotOutcome = "50% EXTRA DEPOSIT MATCH";
+                finalSymbols = ["⚡", "⚡", "⚡"];
             }
 
-            document.getElementById('scratchResultLabel').textContent = scratchOutcome;
-            initScratchCanvas(scratchOutcome);
-            
-            localStorage.setItem('halloween_scratch_time', new Date().getTime().toString());
-        }
+            // Simulate spinning duration
+            setTimeout(() => {
+                r1.classList.remove('slot-spinning');
+                r1.textContent = finalSymbols[0];
+            }, 1200);
 
-        function initScratchCanvas(outcome) {
-            const canvas = document.getElementById('scratchCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            setTimeout(() => {
+                r2.classList.remove('slot-spinning');
+                r2.textContent = finalSymbols[1];
+            }, 1800);
 
-            ctx.fillStyle = '#b45309';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#f59e0b';
-            ctx.font = 'bold 14px Poppins';
-            ctx.textAlign = 'center';
-            ctx.fillText('🎃 SCRATCH HERE 🎃', canvas.width / 2, canvas.height / 2 + 5);
+            setTimeout(() => {
+                r3.classList.remove('slot-spinning');
+                r3.textContent = finalSymbols[2];
 
-            let isDrawing = false;
+                msgLabel.textContent = slotOutcome;
+                localStorage.setItem('halloween_slot_time', new Date().getTime().toString());
 
-            function scratch(e) {
-                if (!isDrawing) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top;
-
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x, y, 25, 0, Math.PI * 2);
-                ctx.fill();
-
-                checkScratchProgress(outcome);
-            }
-
-            canvas.addEventListener('mousedown', () => isDrawing = true);
-            canvas.addEventListener('mouseup', () => isDrawing = false);
-            canvas.addEventListener('mousemove', scratch);
-
-            canvas.addEventListener('touchstart', () => isDrawing = true);
-            canvas.addEventListener('touchend', () => isDrawing = false);
-            canvas.addEventListener('touchmove', scratch);
-        }
-
-        function checkScratchProgress(outcome) {
-            const canvas = document.getElementById('scratchCanvas');
-            const ctx = canvas.getContext('2d');
-            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            let cleared = 0;
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] === 0) cleared++;
-            }
-            const percent = (cleared / (pixels.length / 4)) * 100;
-
-            if (percent > 40 && canvas.style.display !== 'none') {
-                canvas.style.display = 'none';
-                
-                if (outcome !== "NO REWARD (EMPTY BOX)") {
+                if (slotOutcome !== "NO REWARD (TRY AGAIN LATER)") {
                     setTimeout(() => {
-                        document.getElementById('winModalEmoji').textContent = "🎁✨";
-                        document.getElementById('winModalSub').textContent = "Scratch Card Winner!";
-                        document.getElementById('prizeDisplay').textContent = outcome;
-                        document.getElementById('claimedCodeDisplay').textContent = "SCRATCH-HALLOWEEN";
+                        document.getElementById('winModalEmoji').textContent = "🎰✨";
+                        document.getElementById('winModalSub').textContent = "Slot Machine Winner!";
+                        document.getElementById('prizeDisplay').textContent = slotOutcome;
+                        document.getElementById('claimedCodeDisplay').textContent = "SLOTS-HALLOWEEN";
                         document.getElementById('winModal').classList.remove('hidden');
-                        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-                    }, 400);
+                        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                    }, 500);
+                } else {
+                    msgLabel.textContent = "😔 NO REWARD — TRY AGAIN IN 6 HOURS!";
                 }
-            }
+            }, 2400);
         }
 
-        // Swipe & Touch Drag Controls to Spin
+        // Swipe & Touch Drag Controls to Spin Wheel
         let startY = 0;
         let isDragging = false;
         const wheelCanvas = document.getElementById('wheel');
