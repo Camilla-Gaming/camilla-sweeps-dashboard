@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camilla Promos - Lucky 13 Halloween Mystery Wheel</title>
+    <title>Camilla Promos - Lucky 13 Halloween Mystery Wheel & Scratch</title>
 
     <!-- Facebook / Open Graph Link Preview Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/halloween.html" />
     <meta property="og:title" content="Camilla Promos - Lucky 13 Halloween Mystery Wheel" />
-    <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel to claim guaranteed deposit match bonuses from 40% up to 100%!" />
+    <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel & Scratch for guaranteed deposit match bonuses!" />
     <meta property="og:image" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/preview.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -102,12 +102,17 @@
             border: 1px solid rgba(245, 158, 11, 0.4);
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(120, 53, 15, 0.3);
         }
+
+        #scratchCanvas {
+            touch-action: none;
+            cursor: crosshair;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-between p-4">
 
     <!-- Header Section -->
-    <header class="text-center mb-6">
+    <header class="text-center mb-4 max-w-xl w-full">
         <span class="inline-block bg-amber-500/20 text-amber-400 border border-amber-500/40 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-2">
             🎃 HALLOWEEN SPOOKTACULAR 🎃
         </span>
@@ -117,10 +122,21 @@
         <p class="text-xs sm:text-sm text-gray-400 mt-1" id="statusHeaderMsg">
             Guaranteed deposit match bonuses from 40% up to 100%!
         </p>
+
+        <!-- Halloween Eve Countdown & Grand Giveaway Banner (US Eastern Time) -->
+        <div class="mt-3 bg-gradient-to-r from-amber-950/90 via-purple-950/90 to-amber-950/90 border-2 border-amber-500/60 p-3 rounded-2xl shadow-xl">
+            <div class="text-[11px] text-amber-300 font-bold uppercase tracking-wider">⏳ HALLOWEEN EVE EVENT DROPPING IN (EST):</div>
+            <div id="countdownTimer" class="text-lg font-black text-amber-400 tracking-widest my-1">Loading...</div>
+            <div class="mt-1 pt-2 border-t border-amber-500/30 flex justify-around text-xs font-extrabold text-amber-200">
+                <span>🎁 $15 FREEPLAY</span>
+                <span>•</span>
+                <span>🔥 100% DEPOSIT MATCH</span>
+            </div>
+        </div>
     </header>
 
-    <!-- Main Game Wheel Container (Visible immediately on landing page) -->
-    <main class="flex flex-col items-center space-y-6">
+    <!-- Main Game Section (Wheel + Scratch Card) -->
+    <main class="flex flex-col items-center space-y-6 w-full max-w-md my-auto">
         <div class="wheel-container" id="wheelBox">
             <div class="pointer"></div>
             <canvas id="wheel"></canvas>
@@ -130,14 +146,48 @@
         </div>
 
         <button id="spinBtn" onclick="handleSpinTrigger()" 
-            class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-4 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
+            class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-4 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
             SPIN THE WHEEL!
         </button>
 
         <p class="text-xs text-amber-300/80 italic text-center">
             👉 Swipe the wheel or click spin to unlock with your passcode!
         </p>
+
+        <!-- Divider -->
+        <div class="w-full h-[1px] bg-amber-500/30 my-2"></div>
+
+        <!-- Mystery Scratch-Off Section -->
+        <div class="glow-box w-full rounded-2xl p-4 text-center border border-amber-500/50">
+            <h3 class="title-font text-lg font-black text-amber-400 uppercase tracking-wide">👻 BONUS SCRATCH CARD</h3>
+            <p class="text-[11px] text-gray-300 mt-1 mb-3">Scratch to reveal an extra instant prize or reward!</p>
+            
+            <div id="scratchContainer" class="relative w-full h-32 rounded-xl overflow-hidden bg-slate-900 border-2 border-amber-500/40 flex items-center justify-center">
+                <div id="scratchPrizeText" class="absolute inset-0 flex flex-col items-center justify-center p-2 text-center">
+                    <span class="text-2xl mb-1">🎁</span>
+                    <span id="scratchResultLabel" class="text-sm font-black text-amber-300 uppercase tracking-wide">Enter Username Below to Scratch!</span>
+                </div>
+                <canvas id="scratchCanvas" class="absolute inset-0 w-full h-full cursor-crosshair"></canvas>
+            </div>
+
+            <!-- Username Input for Scratch -->
+            <div id="scratchAuthBox" class="mt-3 flex space-x-2">
+                <input type="text" id="gameUsernameInput" 
+                    class="w-full bg-slate-900/90 border border-slate-700 text-amber-400 text-center font-bold text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-500 uppercase" 
+                    placeholder="ENTER GAME USERNAME" autocomplete="off" />
+                <button onclick="unlockScratchCard()" 
+                    class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-md whitespace-nowrap">
+                    UNLOCK
+                </button>
+            </div>
+            <p id="scratchError" class="text-red-400 text-[10px] font-semibold mt-1 hidden"></p>
+        </div>
     </main>
+
+    <!-- Footer Trust Badge -->
+    <footer class="text-center text-[11px] text-gray-400 mt-4">
+        ⚡ 24/7 Instant Loads & Cashouts • Official Camilla Sweeps Event
+    </footer>
 
     <!-- Passcode Verification Modal -->
     <div id="passcodeModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
@@ -171,18 +221,18 @@
     <!-- Win Result Modal -->
     <div id="winModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
         <div class="glow-box rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-2 border-amber-500">
-            <div class="text-5xl mb-2">🎉🎃</div>
+            <div class="text-5xl mb-2" id="winModalEmoji">🎉🎃</div>
             <h2 class="title-font text-2xl font-black text-amber-400 uppercase tracking-wide">CONGRATULATIONS!</h2>
-            <p class="text-gray-300 text-xs mt-1">You won a guaranteed bonus match of:</p>
+            <p class="text-gray-300 text-xs mt-1" id="winModalSub">You won a guaranteed bonus match of:</p>
             
-            <div id="prizeDisplay" class="text-3xl font-black text-amber-300 my-3 py-2 bg-amber-500/10 rounded-2xl border border-amber-500/30">
+            <div id="prizeDisplay" class="text-2xl font-black text-amber-300 my-3 py-2 bg-amber-500/10 rounded-2xl border border-amber-500/30">
                 100% MATCH
             </div>
 
             <!-- Claim Code Section -->
             <div class="bg-slate-900/90 rounded-xl p-3 mb-4 border border-slate-700">
                 <p class="text-[10px] text-gray-400 uppercase font-semibold">Your Claim Code:</p>
-                <div id="claimedCodeDisplay" class="text-lg font-extrabold text-amber-400 tracking-wider">CAMILLA-XXXX</div>
+                <div id="claimedCodeDisplay" class="text-base font-extrabold text-amber-400 tracking-wider">CAMILLA-XXXX</div>
             </div>
 
             <p class="text-xs text-gray-300 mb-4">
@@ -228,6 +278,27 @@
         let spinSpeedMultiplier = 1;
         let spinTimer = null;
         let winningIndex = 0;
+
+        // Countdown Timer to Halloween Eve Giveaway (October 31, 2026 at 06:00:00 AM US Eastern Time - EDT)
+        function updateCountdown() {
+            const eveDate = new Date('2026-10-31T06:00:00-04:00').getTime();
+            const now = new Date().getTime();
+            const distance = eveDate - now;
+
+            if (distance < 0) {
+                document.getElementById('countdownTimer').textContent = "HALLOWEEN EVE EVENT IS LIVE!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdownTimer').textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
 
         // Audio Context setup
         let audioCtx;
@@ -423,6 +494,8 @@
             localStorage.setItem('used_halloween_codes', JSON.stringify(usedLocally));
 
             const prize = slices[winningIndex];
+            document.getElementById('winModalEmoji').textContent = "🎉🎃";
+            document.getElementById('winModalSub').textContent = "You won a guaranteed bonus match of:";
             document.getElementById('prizeDisplay').textContent = prize;
             document.getElementById('claimedCodeDisplay').textContent = activeCode;
             document.getElementById('winModal').classList.remove('hidden');
@@ -434,6 +507,113 @@
                 spread: 80,
                 origin: { y: 0.6 }
             });
+        }
+
+        // --- SCRATCH CARD LOGIC (50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
+        function unlockScratchCard() {
+            const usernameInput = document.getElementById('gameUsernameInput').value.trim();
+            const errEl = document.getElementById('scratchError');
+            errEl.classList.add('hidden');
+
+            if (!usernameInput) {
+                errEl.textContent = "Please enter your username.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            // Secret verification: must end with 32
+            if (!usernameInput.endsWith('32')) {
+                errEl.textContent = "Invalid username verification. Please check your username.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const scratchedBefore = localStorage.getItem('halloween_scratched');
+            if (scratchedBefore) {
+                errEl.textContent = "You have already scratched a card on this device!";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('scratchAuthBox').classList.add('hidden');
+            
+            const rand = Math.random() * 100;
+            let scratchOutcome = "";
+            if (rand < 50) {
+                scratchOutcome = "NO REWARD (EMPTY BOX)";
+            } else if (rand < 75) {
+                scratchOutcome = "$5 INSTANT FREEPLAY";
+            } else {
+                scratchOutcome = "50% EXTRA DEPOSIT MATCH";
+            }
+
+            document.getElementById('scratchResultLabel').textContent = scratchOutcome;
+            initScratchCanvas(scratchOutcome);
+            localStorage.setItem('halloween_scratched', 'true');
+        }
+
+        function initScratchCanvas(outcome) {
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#b45309';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 14px Poppins';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎃 SCRATCH HERE 🎃', canvas.width / 2, canvas.height / 2 + 5);
+
+            let isDrawing = false;
+
+            function scratch(e) {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI * 2);
+                ctx.fill();
+
+                checkScratchProgress(outcome);
+            }
+
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mousemove', scratch);
+
+            canvas.addEventListener('touchstart', () => isDrawing = true);
+            canvas.addEventListener('touchend', () => isDrawing = false);
+            canvas.addEventListener('touchmove', scratch);
+        }
+
+        function checkScratchProgress(outcome) {
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let cleared = 0;
+            for (let i = 3; i < pixels.length; i += 4) {
+                if (pixels[i] === 0) cleared++;
+            }
+            const percent = (cleared / (pixels.length / 4)) * 100;
+
+            if (percent > 40 && canvas.style.display !== 'none') {
+                canvas.style.display = 'none';
+                
+                if (outcome !== "NO REWARD (EMPTY BOX)") {
+                    setTimeout(() => {
+                        document.getElementById('winModalEmoji').textContent = "🎁✨";
+                        document.getElementById('winModalSub').textContent = "Scratch Card Winner!";
+                        document.getElementById('prizeDisplay').textContent = outcome;
+                        document.getElementById('claimedCodeDisplay').textContent = "SCRATCH-HALLOWEEN";
+                        document.getElementById('winModal').classList.remove('hidden');
+                        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                    }, 400);
+                }
+            }
         }
 
         // Swipe & Touch Drag Controls to Spin
@@ -475,9 +655,9 @@
         });
 
         function copyCodeAndMessage() {
-            const code = activeCode;
+            const code = activeCode || "SCRATCH-HALLOWEEN";
             const prize = document.getElementById('prizeDisplay').textContent;
-            const messageText = `Hey Camilla Sweeps! I spun the Halloween Mystery Wheel with code ${code} and won ${prize}!`;
+            const messageText = `Hey Camilla Sweeps! I won ${prize} from the Halloween event page!`;
 
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(messageText);
