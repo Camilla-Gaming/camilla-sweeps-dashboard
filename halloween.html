@@ -35,27 +35,86 @@
             font-family: 'Cinzel', serif;
         }
 
-        .wheel-container {
+        /* --- Arcade / Casino Wheel Outer Ring & Bulb Styling --- */
+        .arcade-casing {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 335px;
+            height: 335px;
             margin: 0 auto;
-            touch-action: none;
+            padding: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2a1506 0%, #0d0a12 100%);
+            border: 4px solid #f59e0b;
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(0,0,0,0.9);
         }
 
         @media (min-width: 640px) {
-            .wheel-container {
-                width: 440px;
-                height: 440px;
+            .arcade-casing {
+                width: 455px;
+                height: 455px;
+                padding: 15px;
             }
+        }
+
+        /* Ring of Arcade Light Bulbs */
+        .bulb-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .arcade-bulb {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fbbf24;
+            box-shadow: 0 0 8px #fbbf24, 0 0 14px #f59e0b;
+            transform: translate(-50%, -50%);
+            animation: bulbTwinkle 1.2s infinite alternate ease-in-out;
+        }
+
+        @media (min-width: 640px) {
+            .arcade-bulb {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        .arcade-bulb:nth-child(even) {
+            animation-delay: 0.6s;
+            background: #fef08a;
+            box-shadow: 0 0 10px #fef08a, 0 0 16px #fbbf24;
+        }
+
+        @keyframes bulbTwinkle {
+            0% {
+                opacity: 0.3;
+                transform: translate(-50%, -50%) scale(0.85);
+                box-shadow: 0 0 4px #78350f;
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.15);
+                box-shadow: 0 0 12px #fbbf24, 0 0 22px #f59e0b;
+            }
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
         }
 
         #wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 6px solid #f59e0b;
-            box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), inset 0 0 15px rgba(0,0,0,0.8);
+            border: 4px solid #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), inset 0 0 15px rgba(0,0,0,0.8);
             transition: transform 7s cubic-bezier(0.12, 0.99, 0.18, 1);
             cursor: grab;
         }
@@ -66,16 +125,16 @@
 
         .pointer {
             position: absolute;
-            top: -15px;
+            top: -18px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
             border-left: 18px solid transparent;
             border-right: 18px solid transparent;
-            border-top: 30px solid #ef4444;
-            z-index: 20;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+            border-top: 32px solid #ef4444;
+            z-index: 25;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.9));
         }
 
         .center-hub {
@@ -83,16 +142,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
             background: radial-gradient(circle, #f59e0b 0%, #78350f 100%);
             border: 4px solid #fef3c7;
             border-radius: 50%;
-            z-index: 10;
+            z-index: 20;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
+            box-shadow: 0 0 18px rgba(245, 158, 11, 0.9);
             pointer-events: none;
         }
 
@@ -135,13 +194,20 @@
         </div>
     </header>
 
-    <!-- Main Game Section (Wheel + Scratch Card) -->
+    <!-- Main Game Section (Wheel with Arcade Light Ring + Scratch Card) -->
     <main class="flex flex-col items-center space-y-6 w-full max-w-md my-auto">
-        <div class="wheel-container" id="wheelBox">
-            <div class="pointer"></div>
-            <canvas id="wheel"></canvas>
-            <div class="center-hub">
-                <span class="text-xl">🎃</span>
+        
+        <!-- Arcade Light Bulbs Frame Wrapper -->
+        <div class="arcade-casing">
+            <!-- Pulsing Casino Light Bulbs Ring -->
+            <div class="bulb-ring" id="bulbRing"></div>
+
+            <div class="wheel-container" id="wheelBox">
+                <div class="pointer"></div>
+                <canvas id="wheel"></canvas>
+                <div class="center-hub">
+                    <span class="text-xl">🎃</span>
+                </div>
             </div>
         </div>
 
@@ -278,6 +344,27 @@
         let spinSpeedMultiplier = 1;
         let spinTimer = null;
         let winningIndex = 0;
+
+        // Render Arcade Light Bulbs dynamically around the wheel casing
+        function createArcadeBulbs() {
+            const ring = document.getElementById('bulbRing');
+            if (!ring) return;
+            ring.innerHTML = '';
+            const totalBulbs = 20;
+            const radiusPercent = 48; // Position bulbs along outer edge
+
+            for (let i = 0; i < totalBulbs; i++) {
+                const angle = (i * (360 / totalBulbs)) * (Math.PI / 180);
+                const x = 50 + radiusPercent * Math.cos(angle);
+                const y = 50 + radiusPercent * Math.sin(angle);
+
+                const bulb = document.createElement('div');
+                bulb.className = 'arcade-bulb';
+                bulb.style.left = `${x}%`;
+                bulb.style.top = `${y}%`;
+                ring.appendChild(bulb);
+            }
+        }
 
         // Countdown Timer to Halloween Eve Giveaway (October 31, 2026 at 06:00:00 AM US Eastern Time - EDT)
         function updateCountdown() {
@@ -530,7 +617,7 @@
 
             // Check 6-Hour Cooldown Timer
             const lastScratchedTime = localStorage.getItem('halloween_scratch_time');
-            const cooldownHours = 6; // Set to 6 hours reset limit
+            const cooldownHours = 6;
             
             if (lastScratchedTime) {
                 const hoursPassed = (new Date().getTime() - parseInt(lastScratchedTime)) / (1000 * 60 * 60);
@@ -557,7 +644,6 @@
             document.getElementById('scratchResultLabel').textContent = scratchOutcome;
             initScratchCanvas(scratchOutcome);
             
-            // Save current timestamp for the 6-hour cooldown
             localStorage.setItem('halloween_scratch_time', new Date().getTime().toString());
         }
 
@@ -686,8 +772,9 @@
             }, 800);
         }
 
-        // Draw wheel immediately on load
+        // Draw wheel & create arcade light bulbs immediately on load
         window.onload = function() {
+            createArcadeBulbs();
             drawWheel();
         };
     </script>
