@@ -509,7 +509,7 @@
             });
         }
 
-        // --- SCRATCH CARD LOGIC (50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
+        // --- SCRATCH CARD LOGIC (6-Hour Cooldown, 50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
         function unlockScratchCard() {
             const usernameInput = document.getElementById('gameUsernameInput').value.trim();
             const errEl = document.getElementById('scratchError');
@@ -528,11 +528,18 @@
                 return;
             }
 
-            const scratchedBefore = localStorage.getItem('halloween_scratched');
-            if (scratchedBefore) {
-                errEl.textContent = "You have already scratched a card on this device!";
-                errEl.classList.remove('hidden');
-                return;
+            // Check 6-Hour Cooldown Timer
+            const lastScratchedTime = localStorage.getItem('halloween_scratch_time');
+            const cooldownHours = 6; // Set to 6 hours reset limit
+            
+            if (lastScratchedTime) {
+                const hoursPassed = (new Date().getTime() - parseInt(lastScratchedTime)) / (1000 * 60 * 60);
+                if (hoursPassed < cooldownHours) {
+                    const hoursLeft = Math.ceil(cooldownHours - hoursPassed);
+                    errEl.textContent = `Cooldown active! You can try scratching again in about ${hoursLeft} hour(s).`;
+                    errEl.classList.remove('hidden');
+                    return;
+                }
             }
 
             document.getElementById('scratchAuthBox').classList.add('hidden');
@@ -549,7 +556,9 @@
 
             document.getElementById('scratchResultLabel').textContent = scratchOutcome;
             initScratchCanvas(scratchOutcome);
-            localStorage.setItem('halloween_scratched', 'true');
+            
+            // Save current timestamp for the 6-hour cooldown
+            localStorage.setItem('halloween_scratch_time', new Date().getTime().toString());
         }
 
         function initScratchCanvas(outcome) {
@@ -655,7 +664,6 @@
         });
 
         function copyCodeAndMessage() {
-            const code = activeCode || "SCRATCH-HALLOWEEN";
             const prize = document.getElementById('prizeDisplay').textContent;
             const messageText = `Hey Camilla Sweeps! I won ${prize} from the Halloween event page!`;
 
