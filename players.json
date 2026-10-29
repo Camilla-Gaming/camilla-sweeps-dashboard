@@ -62,7 +62,7 @@
     "fbProfile": "https://www.facebook.com/share/19gGnySsPK/",
     "tier": "Bronze",
     "deposits": 9.99,
-    "cashouts": 0.0,
+    "cashouts": 60.0,
     "matchUsed": 2,
     "cashoutChannel": "Chime",
     "notes": "New registration"
@@ -105,10 +105,21 @@
     "name": "William McClary",
     "fbProfile": "https://www.facebook.com/william.mcclary.2025",
     "tier": "Bronze",
-    "deposits": 19.99,
+    "deposits": 30.23,
+    "cashouts": 0.0,
+    "matchUsed": 2,
+    "cashoutChannel": "Apple Pay",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1011",
+    "name": "Mack GoBrazzy",
+    "fbProfile": "https://www.facebook.com/share/1SPkCtYeq3/",
+    "tier": "Bronze",
+    "deposits": 15.0,
     "cashouts": 0.0,
     "matchUsed": 1,
-    "cashoutChannel": "Apple Pay",
+    "cashoutChannel": "Chime (Belinda-Brown-89)",
     "notes": "New registration"
   }
 ]
