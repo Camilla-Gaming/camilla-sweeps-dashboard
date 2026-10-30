@@ -208,7 +208,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4 relative" onclick="initAudioOnClick()">
+<body class="min-h-screen flex flex-col items-center justify-between p-4 relative" onclick="initAndPlayMusic()">
 
     <!-- Ambient Background Floating Particles -->
     <div class="ambient-particle" style="width: 8px; height: 8px; left: 10%; animation-duration: 7s;"></div>
@@ -216,12 +216,11 @@
     <div class="ambient-particle" style="width: 6px; height: 6px; left: 70%; animation-duration: 6s;"></div>
     <div class="ambient-particle" style="width: 10px; height: 10px; left: 85%; animation-duration: 11s;"></div>
 
-    <!-- Top Floating Sound & Vibe Controller Bar -->
-    <div class="w-full max-w-xl flex justify-between items-center z-20 mb-1 px-1">
-        <span class="text-[10px] text-amber-400/80 font-bold tracking-widest uppercase">🎃 CAMILLA SWEEPS AUDIO</span>
-        <button id="musicToggleBtn" onclick="toggleSpookyMusic(event)" 
-            class="bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-amber-500/50 px-3 py-1.5 rounded-full text-xs font-black shadow-lg transition-all flex items-center space-x-1.5">
-            <span>🔇</span><span>PLAY HALLOWEEN VIBE</span>
+    <!-- Floating Top-Right Minimal Volume Toggle Button -->
+    <div class="w-full max-w-xl flex justify-end items-center z-30 mb-1 px-1">
+        <button id="volumeToggleBtn" onclick="toggleMusic(event)" 
+            class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/50 w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-lg transition-all transform hover:scale-105 active:scale-95">
+            🔊
         </button>
     </div>
 
@@ -463,78 +462,90 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- WEB AUDIO API: SPOOKY PIANO + SLOT MACHINE AMBIENT SOUNDTRACK ---
+        // --- WEB AUDIO API: UPBEAT WESTERN CLASSICAL PIANO + LUCKY SLOT CHIMES (<30% VOLUME) ---
         let audioCtx;
-        let bgMusicInterval = null;
+        let musicTimer = null;
         let isMusicPlaying = false;
 
-        function initAudioOnClick() {
+        function initAndPlayMusic() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-        }
-
-        function toggleSpookyMusic(e) {
-            e.stopPropagation();
-            initAudioOnClick();
-            const btn = document.getElementById('musicToggleBtn');
-
             if (!isMusicPlaying) {
                 isMusicPlaying = true;
-                btn.innerHTML = "<span>🔊</span><span>SPOOKY VIBE: ON</span>";
-                btn.classList.remove('bg-purple-900/80', 'text-amber-300');
-                btn.classList.add('bg-amber-500', 'text-slate-950', 'font-black');
-                startSpookyMusicLoop();
-            } else {
-                isMusicPlaying = false;
-                btn.innerHTML = "<span>🔇</span><span>PLAY HALLOWEEN VIBE</span>";
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-black');
-                btn.classList.add('bg-purple-900/80', 'text-amber-300');
-                stopSpookyMusicLoop();
+                document.getElementById('volumeToggleBtn').textContent = "🔊";
+                startUpbeatClassicalLoop();
             }
         }
 
-        function startSpookyMusicLoop() {
-            const spookyNotes = [196.00, 220.00, 233.08, 261.63, 293.66, 329.63, 349.23, 392.00, 523.25];
-            
-            function playNote() {
+        function toggleMusic(e) {
+            e.stopPropagation();
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            isMusicPlaying = !isMusicPlaying;
+            const btn = document.getElementById('volumeToggleBtn');
+
+            if (isMusicPlaying) {
+                btn.textContent = "🔊";
+                startUpbeatClassicalLoop();
+            } else {
+                btn.textContent = "🔇";
+                stopMusicLoop();
+            }
+        }
+
+        function startUpbeatClassicalLoop() {
+            stopMusicLoop();
+            // Happy, exciting Western classical major/minor arpeggio notes (C Major / A minor bouncy cadence)
+            const classicalArpeggio = [261.63, 329.63, 392.00, 523.25, 587.33, 659.25, 783.99, 1046.50];
+            let step = 0;
+
+            function playNextBeat() {
                 if (!isMusicPlaying) return;
                 try {
-                    const freq = spookyNotes[Math.floor(Math.random() * spookyNotes.length)];
+                    const freq = classicalArpeggio[step % classicalArpeggio.length];
+                    step++;
+
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     
-                    osc.type = Math.random() > 0.4 ? 'triangle' : 'sine';
+                    // Triangle / Sine blend for crisp, clean classical grand piano tone
+                    osc.type = step % 2 === 0 ? 'triangle' : 'sine';
                     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
                     
+                    // Low volume (< 30% level, set peak gain around 0.04 to 0.05)
                     gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.08);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.2);
+                    gain.gain.linearRampToValueAtTime(0.045, audioCtx.currentTime + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.65);
                     
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 2.2);
+                    osc.stop(audioCtx.currentTime + 0.65);
                 } catch(err) {}
             }
 
-            playNote();
-            bgMusicInterval = setInterval(playNote, 1100);
+            musicTimer = setInterval(playNextBeat, 280); // Pacey, exciting tempo
         }
 
-        function stopSpookyMusicLoop() {
-            if (bgMusicInterval) {
-                clearInterval(bgMusicInterval);
-                bgMusicInterval = null;
+        function stopMusicLoop() {
+            if (musicTimer) {
+                clearInterval(musicTimer);
+                musicTimer = null;
             }
         }
 
         function playTickSound() {
             try {
-                initAudioOnClick();
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'triangle';
@@ -551,7 +562,7 @@
 
         function playWinFanfare() {
             try {
-                initAudioOnClick();
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const notes = [261.63, 329.63, 392.00, 523.25];
                 notes.forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();
@@ -935,6 +946,10 @@
         window.onload = function() {
             createArcadeBulbs();
             drawWheel();
+            // Attempt auto-start on load
+            setTimeout(() => {
+                initAndPlayMusic();
+            }, 500);
         };
     </script>
 </body>
