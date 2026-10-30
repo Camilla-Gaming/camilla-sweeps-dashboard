@@ -462,7 +462,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- WEB AUDIO API: UPBEAT WESTERN CLASSICAL PIANO + LUCKY SLOT CHIMES (<30% VOLUME) ---
+        // --- WEB AUDIO API: MOZART/BEETHOVEN SOPHISTICATED CLASSICAL PIANO ARPEGGIO (<30% VOLUME) ---
         let audioCtx;
         let musicTimer = null;
         let isMusicPlaying = false;
@@ -477,7 +477,7 @@
             if (!isMusicPlaying) {
                 isMusicPlaying = true;
                 document.getElementById('volumeToggleBtn').textContent = "🔊";
-                startUpbeatClassicalLoop();
+                startClassicalMasterpieceLoop();
             }
         }
 
@@ -495,45 +495,50 @@
 
             if (isMusicPlaying) {
                 btn.textContent = "🔊";
-                startUpbeatClassicalLoop();
+                startClassicalMasterpieceLoop();
             } else {
                 btn.textContent = "🔇";
                 stopMusicLoop();
             }
         }
 
-        function startUpbeatClassicalLoop() {
+        function startClassicalMasterpieceLoop() {
             stopMusicLoop();
-            // Happy, exciting Western classical major/minor arpeggio notes (C Major / A minor bouncy cadence)
-            const classicalArpeggio = [261.63, 329.63, 392.00, 523.25, 587.33, 659.25, 783.99, 1046.50];
-            let step = 0;
+            // Sophisticated Mozart/Beethoven major-key melodic arpeggio sequence (C Major / G Major grand salon progression)
+            const classicalSequence = [
+                261.63, 329.63, 392.00, 523.25,  // C Major chord arpeggio
+                293.66, 392.00, 493.88, 587.33,  // G Major variation
+                329.63, 440.00, 523.25, 659.25,  // A minor soaring transition
+                392.00, 493.88, 587.33, 783.99   // Brilliant resolution
+            ];
+            let noteIdx = 0;
 
-            function playNextBeat() {
+            function playNote() {
                 if (!isMusicPlaying) return;
                 try {
-                    const freq = classicalArpeggio[step % classicalArpeggio.length];
-                    step++;
+                    const freq = classicalSequence[noteIdx % classicalSequence.length];
+                    noteIdx++;
 
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     
-                    // Triangle / Sine blend for crisp, clean classical grand piano tone
-                    osc.type = step % 2 === 0 ? 'triangle' : 'sine';
+                    // Rich triangle / sine harmonic blend emulating concert grand piano and classical nylon string guitar plucks
+                    osc.type = noteIdx % 2 === 0 ? 'triangle' : 'sine';
                     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
                     
-                    // Low volume (< 30% level, set peak gain around 0.04 to 0.05)
+                    // Soft, elegant volume level (< 30% intensity, peak gain 0.04)
                     gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.045, audioCtx.currentTime + 0.05);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.65);
+                    gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.75);
                     
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 0.65);
+                    osc.stop(audioCtx.currentTime + 0.75);
                 } catch(err) {}
             }
 
-            musicTimer = setInterval(playNextBeat, 280); // Pacey, exciting tempo
+            musicTimer = setInterval(playNote, 250); // Pacey, exciting, lively tempo
         }
 
         function stopMusicLoop() {
@@ -946,10 +951,10 @@
         window.onload = function() {
             createArcadeBulbs();
             drawWheel();
-            // Attempt auto-start on load
+            // Attempt auto-start on page load
             setTimeout(() => {
                 initAndPlayMusic();
-            }, 500);
+            }, 400);
         };
     </script>
 </body>
