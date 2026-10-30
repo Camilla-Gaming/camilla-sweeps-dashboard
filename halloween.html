@@ -462,7 +462,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- WEB AUDIO API: MOZART/BEETHOVEN SOPHISTICATED CLASSICAL PIANO ARPEGGIO (<30% VOLUME) ---
+        // --- WEB AUDIO API: RICH DUAL-OSCILLATOR CLASSICAL MASTERPIECE (<30% VOLUME) ---
         let audioCtx;
         let musicTimer = null;
         let isMusicPlaying = false;
@@ -504,41 +504,59 @@
 
         function startClassicalMasterpieceLoop() {
             stopMusicLoop();
-            // Sophisticated Mozart/Beethoven major-key melodic arpeggio sequence (C Major / G Major grand salon progression)
-            const classicalSequence = [
-                261.63, 329.63, 392.00, 523.25,  // C Major chord arpeggio
-                293.66, 392.00, 493.88, 587.33,  // G Major variation
-                329.63, 440.00, 523.25, 659.25,  // A minor soaring transition
-                392.00, 493.88, 587.33, 783.99   // Brilliant resolution
+            
+            // Mozart/Beethoven/Segovia-inspired chordal progression (C Maj -> A Min -> F Maj -> G Maj)
+            const classicalChordProgression = [
+                { root: 261.63, third: 329.63, fifth: 392.00 }, // C Major
+                { root: 220.00, third: 261.63, fifth: 329.63 }, // A minor
+                { root: 349.23, third: 440.00, fifth: 523.25 }, // F Major
+                { root: 392.00, third: 493.88, fifth: 587.33 }  // G Major
             ];
-            let noteIdx = 0;
+            
+            let chordIndex = 0;
+            let noteInChord = 0;
 
-            function playNote() {
+            function playClassicalArpeggioStep() {
                 if (!isMusicPlaying) return;
                 try {
-                    const freq = classicalSequence[noteIdx % classicalSequence.length];
-                    noteIdx++;
+                    const chord = classicalChordProgression[chordIndex];
+                    const arpeggioNotes = [chord.root, chord.third, chord.fifth, chord.root * 2];
+                    const freq = arpeggioNotes[noteInChord % arpeggioNotes.length];
+                    
+                    noteInChord++;
+                    if (noteInChord >= arpeggioNotes.length) {
+                        noteInChord = 0;
+                        chordIndex = (chordIndex + 1) % classicalChordProgression.length;
+                    }
 
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
+                    // Dual oscillators for rich acoustic string & concert grand piano resonance
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+
+                    osc1.type = 'triangle'; // Warm acoustic body
+                    osc2.type = 'sine';     // Pure classical overtone
                     
-                    // Rich triangle / sine harmonic blend emulating concert grand piano and classical nylon string guitar plucks
-                    osc.type = noteIdx % 2 === 0 ? 'triangle' : 'sine';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                    
-                    // Soft, elegant volume level (< 30% intensity, peak gain 0.04)
-                    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.06);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.75);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.75);
+                    osc1.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    osc2.frequency.setValueAtTime(freq * 1.003, audioCtx.currentTime); // Slight detune for warmth
+
+                    // Low volume envelope (< 30% intensity, smooth classical pluck & decay)
+                    gainNode.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.035, audioCtx.currentTime + 0.04);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.85);
+
+                    osc1.connect(gainNode);
+                    osc2.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+
+                    osc1.start();
+                    osc2.start();
+                    osc1.stop(audioCtx.currentTime + 0.85);
+                    osc2.stop(audioCtx.currentTime + 0.85);
                 } catch(err) {}
             }
 
-            musicTimer = setInterval(playNote, 250); // Pacey, exciting, lively tempo
+            musicTimer = setInterval(playClassicalArpeggioStep, 220); // Smooth, flowing, and exciting classical tempo
         }
 
         function stopMusicLoop() {
