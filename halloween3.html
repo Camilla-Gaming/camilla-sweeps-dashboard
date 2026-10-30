@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@400;600;800;900&display=swap');
         
         body {
             font-family: 'Poppins', sans-serif;
@@ -56,22 +56,22 @@
         /* --- Arcade / Casino Wheel Outer Ring & Bulb Styling --- */
         .arcade-casing {
             position: relative;
-            width: 335px;
-            height: 335px;
+            width: 345px;
+            height: 345px;
             margin: 0 auto;
             padding: 12px;
             border-radius: 50%;
             background: radial-gradient(circle, #2a1506 0%, #0d0a12 100%);
-            border: 4px solid #f59e0b;
-            box-shadow: 0 0 35px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(0,0,0,0.9);
+            border: 5px solid #f59e0b;
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.7), inset 0 0 20px rgba(0,0,0,0.9);
             z-index: 10;
         }
 
         @media (min-width: 640px) {
             .arcade-casing {
-                width: 455px;
-                height: 455px;
-                padding: 15px;
+                width: 470px;
+                height: 470px;
+                padding: 16px;
             }
         }
 
@@ -224,7 +224,7 @@
             LUCKY 13 MYSTERY WHEEL
         </h1>
         <p class="text-xs sm:text-sm text-gray-400 mt-1" id="statusHeaderMsg">
-            Guaranteed deposit match bonuses from 40% up to 100%!
+            13 Epic Guaranteed Offers & Free Spins!
         </p>
 
         <!-- Halloween Eve Countdown & Grand Giveaway Banner (US Eastern Time) -->
@@ -232,9 +232,9 @@
             <div class="text-[11px] text-amber-300 font-bold uppercase tracking-wider">⏳ HALLOWEEN EVE EVENT DROPPING IN (EST):</div>
             <div id="countdownTimer" class="text-lg font-black text-amber-400 tracking-widest my-1">Loading...</div>
             <div class="mt-1 pt-2 border-t border-amber-500/30 flex justify-around text-xs font-extrabold text-amber-200">
-                <span>🎁 15 FREEPLAY</span>
+                <span>🎁 13 FREEPLAY</span>
                 <span>•</span>
-                <span>🔥 100% DEPOSIT MATCH</span>
+                <span>🔥 200% MEGA HAPPY HOUR</span>
             </div>
         </div>
     </header>
@@ -338,23 +338,23 @@
         <div class="glow-box rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-2 border-amber-500">
             <div class="text-5xl mb-2" id="winModalEmoji">🎉🎃</div>
             <h2 class="title-font text-2xl font-black text-amber-400 uppercase tracking-wide">CONGRATULATIONS!</h2>
-            <p class="text-gray-300 text-xs mt-1" id="winModalSub">You won a guaranteed bonus match of:</p>
+            <p class="text-gray-300 text-xs mt-1" id="winModalSub">You won a guaranteed bonus:</p>
             
             <div id="prizeDisplay" class="text-2xl font-black text-amber-300 my-3 py-2 bg-amber-500/10 rounded-2xl border border-amber-500/30">
                 100% MATCH
             </div>
 
             <!-- Claim Code Section -->
-            <div class="bg-slate-900/90 rounded-xl p-3 mb-4 border border-slate-700">
+            <div id="claimCodeBoxWrapper" class="bg-slate-900/90 rounded-xl p-3 mb-4 border border-slate-700">
                 <p class="text-[10px] text-gray-400 uppercase font-semibold">Your Claim Code:</p>
                 <div id="claimedCodeDisplay" class="text-base font-extrabold text-amber-400 tracking-wider">CAMILLA-XXXX</div>
             </div>
 
-            <p class="text-xs text-gray-300 mb-4">
+            <p class="text-xs text-gray-300 mb-4" id="winModalInstruction">
                 Take a screenshot of this window OR copy your code and message <strong>Camilla Sweeps</strong> on Facebook to redeem!
             </p>
 
-            <button id="copyClaimBtn" onclick="copyCodeAndMessage()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black py-3 rounded-xl transition-all flex items-center justify-center space-x-2">
+            <button id="modalActionBtn" onclick="handleWinModalAction()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black py-3 rounded-xl transition-all flex items-center justify-center space-x-2">
                 <span>📋 COPY CODE & MESSAGE CAMILLA SWEEPS</span>
             </button>
         </div>
@@ -374,10 +374,21 @@
             "CAMILLA-5066", "CAMILLA-5077", "CAMILLA-5088", "CAMILLA-5099", "CAMILLA-5500"
         ];
 
+        // Exact 13 Lucky Offers with eye-catching uppercase text
         const slices = [
-            "40% MATCH", "50% MATCH", "5 CREDITS", "40% MATCH",
-            "70% MATCH", "50% MATCH", "100% JACKPOT", "40% MATCH",
-            "60% MATCH", "10 CREDITS", "80% MATCH", "40% MATCH", "50% MATCH"
+            "13 FREEPLAY",
+            "100% MATCH + $5",
+            "70% MATCHUP",
+            "7 FREEPLAY",
+            "200% MEGA",
+            "5 QUICK-START",
+            "100% REFERRAL",
+            "FREE $10 LOAD",
+            "130% SPOOKY",
+            "5 FREEPLAY",
+            "FREE 2ND SPIN",
+            "50% MATCHUP",
+            "13 MATCH 15+"
         ];
 
         const colors = [
@@ -388,6 +399,7 @@
 
         let activeCode = "";
         let isVerified = false;
+        let hasFreeSecondSpin = false;
         let currentRotation = 0;
         let isSpinning = false;
         let spinSpeedMultiplier = 1;
@@ -509,10 +521,11 @@
                 ctx.rotate(angle + sliceAngle / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#fef3c7";
-                ctx.font = "bold 14px Poppins";
-                ctx.shadowColor = "rgba(0,0,0,0.8)";
-                ctx.shadowBlur = 4;
-                ctx.fillText(slices[i], radius - 25, 5);
+                // Bold, eye-catching, big fonts optimized for 13 segments
+                ctx.font = "900 12.5px Poppins";
+                ctx.shadowColor = "rgba(0,0,0,0.9)";
+                ctx.shadowBlur = 6;
+                ctx.fillText(slices[i], radius - 22, 5);
                 ctx.restore();
             }
         }
@@ -560,6 +573,13 @@
         }
 
         function handleSpinTrigger() {
+            if (hasFreeSecondSpin) {
+                hasFreeSecondSpin = false;
+                document.getElementById('statusHeaderMsg').textContent = `⚡ Free Second Spin Activated!`;
+                executeSpin();
+                return;
+            }
+
             if (!isVerified) {
                 openPasscodeModal();
                 return;
@@ -625,15 +645,45 @@
             isSpinning = false;
             spinSpeedMultiplier = 1;
 
-            const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
-            usedLocally.push(activeCode);
-            localStorage.setItem('used_halloween_codes', JSON.stringify(usedLocally));
-
             const prize = slices[winningIndex];
+
+            // Check if pointer points to FREE 2ND SPIN
+            if (prize === "FREE 2ND SPIN") {
+                hasFreeSecondSpin = true;
+                playWinFanfare();
+                document.getElementById('winModalEmoji').textContent = "🎡✨";
+                document.getElementById('winModalSub').textContent = "Lucky Wheel Result:";
+                document.getElementById('prizeDisplay').textContent = "FREE 2ND SPIN!";
+                document.getElementById('claimCodeBoxWrapper').classList.add('hidden');
+                document.getElementById('winModalInstruction').textContent = "You landed on Free Second Spin! Click below to spin again immediately!";
+                
+                const actionBtn = document.getElementById('modalActionBtn');
+                actionBtn.innerHTML = "<span>🎲 SPIN AGAIN NOW!</span>";
+                actionBtn.setAttribute('onclick', 'closeWinModalAndSpinAgain()');
+                
+                document.getElementById('winModal').classList.remove('hidden');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                return;
+            }
+
+            // Standard Prize Won
+            const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
+            if (activeCode && !usedLocally.includes(activeCode)) {
+                usedLocally.push(activeCode);
+                localStorage.setItem('used_halloween_codes', JSON.stringify(usedLocally));
+            }
+
             document.getElementById('winModalEmoji').textContent = "🎉🎃";
-            document.getElementById('winModalSub').textContent = "You won a guaranteed bonus match of:";
+            document.getElementById('winModalSub').textContent = "You won a guaranteed bonus:";
             document.getElementById('prizeDisplay').textContent = prize;
-            document.getElementById('claimedCodeDisplay').textContent = activeCode;
+            document.getElementById('claimedCodeDisplay').textContent = activeCode || "CAMILLA-SPIN";
+            document.getElementById('claimCodeBoxWrapper').classList.remove('hidden');
+            document.getElementById('winModalInstruction').textContent = "Take a screenshot of this window OR copy your code and message Camilla Sweeps on Facebook to redeem!";
+            
+            const actionBtn = document.getElementById('modalActionBtn');
+            actionBtn.innerHTML = "<span>📋 COPY CODE & MESSAGE CAMILLA SWEEPS</span>";
+            actionBtn.setAttribute('onclick', 'copyCodeAndMessage()');
+
             document.getElementById('winModal').classList.remove('hidden');
 
             playWinFanfare();
@@ -643,6 +693,11 @@
                 spread: 80,
                 origin: { y: 0.6 }
             });
+        }
+
+        function closeWinModalAndSpinAgain() {
+            document.getElementById('winModal').classList.add('hidden');
+            handleSpinTrigger();
         }
 
         // --- HALLOWEEN BONUS SLOT MACHINE LOGIC (6-Hour Cooldown, 50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
@@ -660,14 +715,12 @@
                 return;
             }
 
-            // Secret verification: must end with 32
             if (!usernameInput.endsWith('32')) {
                 errEl.textContent = "Invalid username verification. Please check your username.";
                 errEl.classList.remove('hidden');
                 return;
             }
 
-            // Check 6-Hour Cooldown Timer
             const lastSpinsTime = localStorage.getItem('halloween_slot_time');
             const cooldownHours = 6;
             
@@ -692,26 +745,21 @@
             r2.classList.add('slot-spinning');
             r3.classList.add('slot-spinning');
 
-            // Determine outcome based on weighted probabilities (50% Empty, 25% Freeplay, 25% Extra Match)
             const rand = Math.random() * 100;
             let finalSymbols = [];
             let slotOutcome = "";
 
             if (rand < 50) {
-                // Empty / No reward (3 non-matching spooky symbols)
                 slotOutcome = "NO REWARD (TRY AGAIN LATER)";
                 finalSymbols = ["🎃", "👻", "💀"];
             } else if (rand < 75) {
-                // $5 Instant Freeplay (3 matching gift boxes)
                 slotOutcome = "$5 INSTANT FREEPLAY";
                 finalSymbols = ["🎁", "🎁", "🎁"];
             } else {
-                // 50% Extra Deposit Match (3 matching lightning bolts)
                 slotOutcome = "50% EXTRA DEPOSIT MATCH";
                 finalSymbols = ["⚡", "⚡", "⚡"];
             }
 
-            // Simulate spinning duration
             setTimeout(() => {
                 r1.classList.remove('slot-spinning');
                 r1.textContent = finalSymbols[0];
@@ -735,6 +783,13 @@
                         document.getElementById('winModalSub').textContent = "Slot Machine Winner!";
                         document.getElementById('prizeDisplay').textContent = slotOutcome;
                         document.getElementById('claimedCodeDisplay').textContent = "SLOTS-HALLOWEEN";
+                        document.getElementById('claimCodeBoxWrapper').classList.remove('hidden');
+                        document.getElementById('winModalInstruction').textContent = "Take a screenshot of this window OR copy your code and message Camilla Sweeps on Facebook to redeem!";
+                        
+                        const actionBtn = document.getElementById('modalActionBtn');
+                        actionBtn.innerHTML = "<span>📋 COPY CODE & MESSAGE CAMILLA SWEEPS</span>";
+                        actionBtn.setAttribute('onclick', 'copyCodeAndMessage()');
+
                         document.getElementById('winModal').classList.remove('hidden');
                         confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
                     }, 500);
@@ -797,7 +852,7 @@
                 document.body.removeChild(tempInput);
             }
 
-            const btn = document.getElementById('copyClaimBtn');
+            const btn = document.getElementById('modalActionBtn');
             btn.innerHTML = "<span>✅ CODE COPIED! OPENING MESSENGER...</span>";
             
             setTimeout(() => {
