@@ -125,7 +125,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            /* FIXED: Allows natural vertical page scrolling over the wheel */
+            /* Allows natural vertical page scrolling over the wheel */
             touch-action: pan-y;
         }
 
@@ -208,13 +208,22 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4 relative">
+<body class="min-h-screen flex flex-col items-center justify-between p-4 relative" onclick="initAudioOnClick()">
 
     <!-- Ambient Background Floating Particles -->
     <div class="ambient-particle" style="width: 8px; height: 8px; left: 10%; animation-duration: 7s;"></div>
     <div class="ambient-particle" style="width: 12px; height: 12px; left: 30%; animation-duration: 9s;"></div>
     <div class="ambient-particle" style="width: 6px; height: 6px; left: 70%; animation-duration: 6s;"></div>
     <div class="ambient-particle" style="width: 10px; height: 10px; left: 85%; animation-duration: 11s;"></div>
+
+    <!-- Top Floating Sound & Vibe Controller Bar -->
+    <div class="w-full max-w-xl flex justify-between items-center z-20 mb-1 px-1">
+        <span class="text-[10px] text-amber-400/80 font-bold tracking-widest uppercase">🎃 CAMILLA SWEEPS AUDIO</span>
+        <button id="musicToggleBtn" onclick="toggleSpookyMusic(event)" 
+            class="bg-purple-900/80 hover:bg-purple-800 text-amber-300 border border-amber-500/50 px-3 py-1.5 rounded-full text-xs font-black shadow-lg transition-all flex items-center space-x-1.5">
+            <span>🔇</span><span>PLAY HALLOWEEN VIBE</span>
+        </button>
+    </div>
 
     <!-- Header Section -->
     <header class="text-center mb-2 max-w-xl w-full z-10">
@@ -454,17 +463,78 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Audio Context setup
+        // --- WEB AUDIO API: SPOOKY PIANO + SLOT MACHINE AMBIENT SOUNDTRACK ---
         let audioCtx;
-        
+        let bgMusicInterval = null;
+        let isMusicPlaying = false;
+
+        function initAudioOnClick() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function toggleSpookyMusic(e) {
+            e.stopPropagation();
+            initAudioOnClick();
+            const btn = document.getElementById('musicToggleBtn');
+
+            if (!isMusicPlaying) {
+                isMusicPlaying = true;
+                btn.innerHTML = "<span>🔊</span><span>SPOOKY VIBE: ON</span>";
+                btn.classList.remove('bg-purple-900/80', 'text-amber-300');
+                btn.classList.add('bg-amber-500', 'text-slate-950', 'font-black');
+                startSpookyMusicLoop();
+            } else {
+                isMusicPlaying = false;
+                btn.innerHTML = "<span>🔇</span><span>PLAY HALLOWEEN VIBE</span>";
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-black');
+                btn.classList.add('bg-purple-900/80', 'text-amber-300');
+                stopSpookyMusicLoop();
+            }
+        }
+
+        function startSpookyMusicLoop() {
+            const spookyNotes = [196.00, 220.00, 233.08, 261.63, 293.66, 329.63, 349.23, 392.00, 523.25];
+            
+            function playNote() {
+                if (!isMusicPlaying) return;
+                try {
+                    const freq = spookyNotes[Math.floor(Math.random() * spookyNotes.length)];
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = Math.random() > 0.4 ? 'triangle' : 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    
+                    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.2);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 2.2);
+                } catch(err) {}
+            }
+
+            playNote();
+            bgMusicInterval = setInterval(playNote, 1100);
+        }
+
+        function stopSpookyMusicLoop() {
+            if (bgMusicInterval) {
+                clearInterval(bgMusicInterval);
+                bgMusicInterval = null;
+            }
+        }
+
         function playTickSound() {
             try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+                initAudioOnClick();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'triangle';
@@ -481,7 +551,7 @@
 
         function playWinFanfare() {
             try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                initAudioOnClick();
                 const notes = [261.63, 329.63, 392.00, 523.25];
                 notes.forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();

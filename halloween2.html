@@ -9,7 +9,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/halloween.html" />
     <meta property="og:title" content="Camilla Promos - Lucky 13 Halloween Mystery Wheel" />
-    <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel & Play Halloween Slots for guaranteed deposit match bonuses!" />
+    <meta property="og:description" content="Spin the Lucky 13 Mystery Wheel & Play Halloween Slots for 13 epic guaranteed freeplay and bonus offers!" />
     <meta property="og:image" content="https://camilla-gaming.github.io/camilla-sweeps-dashboard/preview.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -125,7 +125,8 @@
             position: relative;
             width: 100%;
             height: 100%;
-            touch-action: none;
+            /* FIXED: Allows natural vertical page scrolling over the wheel */
+            touch-action: pan-y;
         }
 
         #wheel {
@@ -216,31 +217,36 @@
     <div class="ambient-particle" style="width: 10px; height: 10px; left: 85%; animation-duration: 11s;"></div>
 
     <!-- Header Section -->
-    <header class="text-center mb-4 max-w-xl w-full z-10">
-        <span class="inline-block bg-amber-500/20 text-amber-400 border border-amber-500/40 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-2">
+    <header class="text-center mb-2 max-w-xl w-full z-10">
+        <span class="inline-block bg-amber-500/20 text-amber-400 border border-amber-500/40 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-1">
             🎃 HALLOWEEN SPOOKTACULAR 🎃
         </span>
         <h1 class="title-font text-3xl sm:text-4xl font-black text-amber-400 tracking-wide uppercase drop-shadow-lg">
             LUCKY 13 MYSTERY WHEEL
         </h1>
-        <p class="text-xs sm:text-sm text-gray-400 mt-1" id="statusHeaderMsg">
+        <p class="text-xs sm:text-sm text-gray-400 mt-0.5" id="statusHeaderMsg">
             13 Epic Guaranteed Offers & Free Spins!
         </p>
 
-        <!-- Halloween Eve Countdown & Grand Giveaway Banner (US Eastern Time) -->
-        <div class="mt-3 bg-gradient-to-r from-amber-950/90 via-purple-950/90 to-amber-950/90 border-2 border-amber-500/60 p-3 rounded-2xl shadow-xl">
-            <div class="text-[11px] text-amber-300 font-bold uppercase tracking-wider">⏳ HALLOWEEN EVE EVENT DROPPING IN (EST):</div>
-            <div id="countdownTimer" class="text-lg font-black text-amber-400 tracking-widest my-1">Loading...</div>
-            <div class="mt-1 pt-2 border-t border-amber-500/30 flex justify-around text-xs font-extrabold text-amber-200">
-                <span>🎁 13 FREEPLAY</span>
-                <span>•</span>
-                <span>🔥 200% MEGA HAPPY HOUR</span>
+        <!-- Halloween Eve Countdown & Local Image Badges Display -->
+        <div class="mt-2 bg-gradient-to-r from-amber-950/90 via-purple-950/90 to-amber-950/90 border-2 border-amber-500/60 p-2.5 rounded-2xl shadow-xl">
+            <div class="text-[11px] text-amber-300 font-bold uppercase tracking-wider mb-1">⏳ HALLOWEEN EVE EVENT DROPPING IN (EST):</div>
+            <div id="countdownTimer" class="text-base font-black text-amber-400 tracking-widest mb-2">Loading...</div>
+            
+            <!-- Local Promotional Image Badges Row -->
+            <div class="pt-2 border-t border-amber-500/30 grid grid-cols-2 gap-3 items-center justify-center">
+                <div class="flex justify-center">
+                    <img src="badge-freeplay.png" alt="Instant Freeplay" class="max-h-20 w-auto drop-shadow-md rounded-xl hover:scale-105 transition-transform" />
+                </div>
+                <div class="flex justify-center">
+                    <img src="badge-match.png" alt="200% Mega Match" class="max-h-20 w-auto drop-shadow-md rounded-xl hover:scale-105 transition-transform" />
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Main Game Section (Wheel + Slot Machine Bonus Game) -->
-    <main class="flex flex-col items-center space-y-6 w-full max-w-md my-auto z-10">
+    <main class="flex flex-col items-center space-y-4 w-full max-w-md my-auto z-10">
         
         <!-- Arcade Light Bulbs Frame Wrapper -->
         <div class="arcade-casing">
@@ -257,31 +263,31 @@
         </div>
 
         <button id="spinBtn" onclick="handleSpinTrigger()" 
-            class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-4 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
+            class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xl font-black tracking-wider py-3.5 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-amber-300">
             SPIN THE WHEEL!
         </button>
 
         <p class="text-xs text-amber-300/80 italic text-center">
-            👉 Swipe the wheel or click spin to unlock with your passcode!
+            👉 Spin the wheel or click the button to unlock with your passcode!
         </p>
 
         <!-- Divider -->
-        <div class="w-full h-[1px] bg-amber-500/30 my-2"></div>
+        <div class="w-full h-[1px] bg-amber-500/30 my-1"></div>
 
         <!-- Halloween Slot Machine Mini-Game Section -->
-        <div class="glow-box w-full rounded-2xl p-4 text-center border border-amber-500/50">
-            <h3 class="title-font text-lg font-black text-amber-400 uppercase tracking-wide">🎰 HALLOWEEN BONUS SLOTS</h3>
-            <p class="text-[11px] text-gray-300 mt-1 mb-3">Spin the reels to win instant freeplay or extra match bonuses!</p>
+        <div class="glow-box w-full rounded-2xl p-3.5 text-center border border-amber-500/50">
+            <h3 class="title-font text-base font-black text-amber-400 uppercase tracking-wide">🎰 HALLOWEEN BONUS SLOTS</h3>
+            <p class="text-[11px] text-gray-300 mt-0.5 mb-2.5">Spin the reels to win instant freeplay or extra match bonuses!</p>
             
             <!-- 3 Slot Reels Display -->
-            <div class="grid grid-cols-3 gap-2 mb-3">
+            <div class="grid grid-cols-3 gap-2 mb-2.5">
                 <div id="reel1" class="slot-reel">🎃</div>
                 <div id="reel2" class="slot-reel">🎁</div>
                 <div id="reel3" class="slot-reel">⚡</div>
             </div>
 
             <!-- Slot Status / Result Message -->
-            <div id="slotMsgBox" class="text-xs font-bold text-amber-300 mb-3 min-h-[1.5rem] flex items-center justify-center bg-amber-500/10 rounded-xl border border-amber-500/30 p-2">
+            <div id="slotMsgBox" class="text-xs font-bold text-amber-300 mb-2.5 min-h-[1.5rem] flex items-center justify-center bg-amber-500/10 rounded-xl border border-amber-500/30 p-2">
                 <span id="slotResultLabel">Enter Username Below to Spin Slots!</span>
             </div>
 
@@ -295,12 +301,12 @@
                     SPIN SLOTS
                 </button>
             </div>
-            <p id="slotError" class="text-red-400 text-[10px] font-semibold mt-2 hidden"></p>
+            <p id="slotError" class="text-red-400 text-[10px] font-semibold mt-1.5 hidden"></p>
         </div>
     </main>
 
     <!-- Footer Trust Badge -->
-    <footer class="text-center text-[11px] text-gray-400 mt-4 z-10">
+    <footer class="text-center text-[11px] text-gray-400 mt-2 z-10">
         ⚡ 24/7 Instant Loads & Cashouts • Official Camilla Sweeps Event
     </footer>
 
@@ -521,7 +527,6 @@
                 ctx.rotate(angle + sliceAngle / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#fef3c7";
-                // Bold, eye-catching, big fonts optimized for 13 segments
                 ctx.font = "900 12.5px Poppins";
                 ctx.shadowColor = "rgba(0,0,0,0.9)";
                 ctx.shadowBlur = 6;
@@ -647,7 +652,6 @@
 
             const prize = slices[winningIndex];
 
-            // Check if pointer points to FREE 2ND SPIN
             if (prize === "FREE 2ND SPIN") {
                 hasFreeSecondSpin = true;
                 playWinFanfare();
@@ -666,7 +670,6 @@
                 return;
             }
 
-            // Standard Prize Won
             const usedLocally = JSON.parse(localStorage.getItem('used_halloween_codes') || '[]');
             if (activeCode && !usedLocally.includes(activeCode)) {
                 usedLocally.push(activeCode);
@@ -700,7 +703,6 @@
             handleSpinTrigger();
         }
 
-        // --- HALLOWEEN BONUS SLOT MACHINE LOGIC (6-Hour Cooldown, 50% Empty, 25% $5 Freeplay, 25% 50% Extra Match) ---
         const slotSymbols = ["🎃", "👻", "💀", "🎁", "⚡", "💎"];
 
         function unlockAndSpinSlots() {
@@ -799,7 +801,7 @@
             }, 2400);
         }
 
-        // Swipe & Touch Drag Controls to Spin Wheel
+        // --- WHEEL INTERACTION: SMOOTH PAGE SCROLLING ENABLED ---
         let startY = 0;
         let isDragging = false;
         const wheelCanvas = document.getElementById('wheel');
@@ -814,7 +816,7 @@
             isDragging = false;
             const endY = e.changedTouches[0].clientY;
             const deltaY = Math.abs(endY - startY);
-            if (deltaY > 30) {
+            if (deltaY > 30 && isVerified) {
                 handleSpinTrigger();
             } else if (isSpinning) {
                 accelerateOrStopSpin();
@@ -830,7 +832,7 @@
             if (!isDragging) return;
             isDragging = false;
             const deltaY = Math.abs(e.clientY - startY);
-            if (deltaY > 20) {
+            if (deltaY > 20 && isVerified) {
                 handleSpinTrigger();
             } else if (isSpinning) {
                 accelerateOrStopSpin();
@@ -860,7 +862,6 @@
             }, 800);
         }
 
-        // Draw wheel & create arcade light bulbs immediately on load
         window.onload = function() {
             createArcadeBulbs();
             drawWheel();
