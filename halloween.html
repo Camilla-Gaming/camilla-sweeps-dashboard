@@ -125,7 +125,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            /* Allows natural vertical page scrolling over the wheel */
+            /* FIXED: Allows natural vertical page scrolling over the wheel */
             touch-action: pan-y;
         }
 
@@ -490,6 +490,18 @@
                 btn.textContent = "🔇";
             }
         }
+
+        // Instantly cut off and stop music when leaving the page or switching tabs
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                bgAudio.pause();
+                bgAudio.currentTime = 0;
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            bgAudio.pause();
+        });
 
         // Web Audio API context for slot wheel tick & win fanfare effects
         let audioCtx;
@@ -898,7 +910,7 @@
         window.onload = function() {
             createArcadeBulbs();
             drawWheel();
-            // Attempt auto-play on load (browsers allow it on interaction or muted states)
+            // Attempt auto-play on page load
             bgAudio.play().then(() => {
                 document.getElementById('volumeToggleBtn').textContent = "🔊";
             }).catch(() => {
