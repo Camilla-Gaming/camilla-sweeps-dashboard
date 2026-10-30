@@ -210,6 +210,9 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-4 relative" onclick="initAndPlayMusic()">
 
+    <!-- Background Audio Element for The Gala Prize MP3 -->
+    <audio id="bgMusic" src="gala-prize.mp3" loop preload="auto"></audio>
+
     <!-- Ambient Background Floating Particles -->
     <div class="ambient-particle" style="width: 8px; height: 8px; left: 10%; animation-duration: 7s;"></div>
     <div class="ambient-particle" style="width: 12px; height: 12px; left: 30%; animation-duration: 9s;"></div>
@@ -462,113 +465,38 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- WEB AUDIO API: RICH DUAL-OSCILLATOR CLASSICAL MASTERPIECE (<30% VOLUME) ---
-        let audioCtx;
-        let musicTimer = null;
-        let isMusicPlaying = false;
+        // --- MP3 BACKGROUND MUSIC CONTROL ---
+        const bgAudio = document.getElementById('bgMusic');
+        bgAudio.volume = 0.25; // Set volume below 30%
 
         function initAndPlayMusic() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            if (!isMusicPlaying) {
-                isMusicPlaying = true;
-                document.getElementById('volumeToggleBtn').textContent = "🔊";
-                startClassicalMasterpieceLoop();
+            if (bgAudio.paused) {
+                bgAudio.play().then(() => {
+                    document.getElementById('volumeToggleBtn').textContent = "🔊";
+                }).catch(e => {});
             }
         }
 
         function toggleMusic(e) {
             e.stopPropagation();
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            isMusicPlaying = !isMusicPlaying;
             const btn = document.getElementById('volumeToggleBtn');
 
-            if (isMusicPlaying) {
-                btn.textContent = "🔊";
-                startClassicalMasterpieceLoop();
+            if (bgAudio.paused) {
+                bgAudio.play().then(() => {
+                    btn.textContent = "🔊";
+                }).catch(e => {});
             } else {
+                bgAudio.pause();
                 btn.textContent = "🔇";
-                stopMusicLoop();
             }
         }
 
-        function startClassicalMasterpieceLoop() {
-            stopMusicLoop();
-            
-            // Mozart/Beethoven/Segovia-inspired chordal progression (C Maj -> A Min -> F Maj -> G Maj)
-            const classicalChordProgression = [
-                { root: 261.63, third: 329.63, fifth: 392.00 }, // C Major
-                { root: 220.00, third: 261.63, fifth: 329.63 }, // A minor
-                { root: 349.23, third: 440.00, fifth: 523.25 }, // F Major
-                { root: 392.00, third: 493.88, fifth: 587.33 }  // G Major
-            ];
-            
-            let chordIndex = 0;
-            let noteInChord = 0;
-
-            function playClassicalArpeggioStep() {
-                if (!isMusicPlaying) return;
-                try {
-                    const chord = classicalChordProgression[chordIndex];
-                    const arpeggioNotes = [chord.root, chord.third, chord.fifth, chord.root * 2];
-                    const freq = arpeggioNotes[noteInChord % arpeggioNotes.length];
-                    
-                    noteInChord++;
-                    if (noteInChord >= arpeggioNotes.length) {
-                        noteInChord = 0;
-                        chordIndex = (chordIndex + 1) % classicalChordProgression.length;
-                    }
-
-                    // Dual oscillators for rich acoustic string & concert grand piano resonance
-                    const osc1 = audioCtx.createOscillator();
-                    const osc2 = audioCtx.createOscillator();
-                    const gainNode = audioCtx.createGain();
-
-                    osc1.type = 'triangle'; // Warm acoustic body
-                    osc2.type = 'sine';     // Pure classical overtone
-                    
-                    osc1.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                    osc2.frequency.setValueAtTime(freq * 1.003, audioCtx.currentTime); // Slight detune for warmth
-
-                    // Low volume envelope (< 30% intensity, smooth classical pluck & decay)
-                    gainNode.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(0.035, audioCtx.currentTime + 0.04);
-                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.85);
-
-                    osc1.connect(gainNode);
-                    osc2.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-
-                    osc1.start();
-                    osc2.start();
-                    osc1.stop(audioCtx.currentTime + 0.85);
-                    osc2.stop(audioCtx.currentTime + 0.85);
-                } catch(err) {}
-            }
-
-            musicTimer = setInterval(playClassicalArpeggioStep, 220); // Smooth, flowing, and exciting classical tempo
-        }
-
-        function stopMusicLoop() {
-            if (musicTimer) {
-                clearInterval(musicTimer);
-                musicTimer = null;
-            }
-        }
-
+        // Web Audio API context for slot wheel tick & win fanfare effects
+        let audioCtx;
         function playTickSound() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'triangle';
@@ -586,6 +514,7 @@
         function playWinFanfare() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 const notes = [261.63, 329.63, 392.00, 523.25];
                 notes.forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();
@@ -969,10 +898,12 @@
         window.onload = function() {
             createArcadeBulbs();
             drawWheel();
-            // Attempt auto-start on page load
-            setTimeout(() => {
-                initAndPlayMusic();
-            }, 400);
+            // Attempt auto-play on load (browsers allow it on interaction or muted states)
+            bgAudio.play().then(() => {
+                document.getElementById('volumeToggleBtn').textContent = "🔊";
+            }).catch(() => {
+                document.getElementById('volumeToggleBtn').textContent = "🔇";
+            });
         };
     </script>
 </body>
