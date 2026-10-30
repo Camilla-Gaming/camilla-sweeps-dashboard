@@ -125,7 +125,8 @@
             position: relative;
             width: 100%;
             height: 100%;
-            touch-action: none;
+            /* FIXED: Allows natural vertical page scrolling over the wheel */
+            touch-action: pan-y;
         }
 
         #wheel {
@@ -800,7 +801,7 @@
             }, 2400);
         }
 
-        // --- WHEEL INTERACTION: NO ACCIDENTAL PASSCODE POPUP ON DRAG ---
+        // --- WHEEL INTERACTION: SMOOTH PAGE SCROLLING ENABLED ---
         let startY = 0;
         let isDragging = false;
         const wheelCanvas = document.getElementById('wheel');
