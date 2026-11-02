@@ -129,7 +129,7 @@
     "tier": "Bronze",
     "deposits": 15.0,
     "cashouts": 0.0,
-    "matchUsed": 0,
+    "matchUsed": 1,
     "cashoutChannel": "Chime",
     "notes": "New registration"
   },
@@ -140,7 +140,7 @@
     "tier": "Bronze",
     "deposits": 10.0,
     "cashouts": 0.0,
-    "matchUsed": 0,
+    "matchUsed": 1,
     "cashoutChannel": "Chime",
     "notes": "New registration"
   },
@@ -151,8 +151,8 @@
     "tier": "Bronze",
     "deposits": 20.o,
     "cashouts": 0.0,
-    "matchUsed": 0,
+    "matchUsed": 1,
     "cashoutChannel": "Chime (Belinda-Brown-89)",
     "notes": "New registration"
-  }
+  },
 ]
