@@ -121,5 +121,38 @@
     "matchUsed": 1,
     "cashoutChannel": "Chime (Belinda-Brown-89)",
     "notes": "New registration"
+  },
+  {
+    "id": "CS-1012",
+    "name": "Mack GoBrazzy",
+    "fbProfile": "https://www.facebook.com/MackGoBrazzy",
+    "tier": "Bronze",
+    "deposits": 15.0,
+    "cashouts": 0.0,
+    "matchUsed": 0,
+    "cashoutChannel": "Chime",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1013",
+    "name": "Asia Anderson",
+    "fbProfile": "https://www.facebook.com/asia.anderson.14473",
+    "tier": "Bronze",
+    "deposits": 10.0,
+    "cashouts": 0.0,
+    "matchUsed": 0,
+    "cashoutChannel": "Chime",
+    "notes": "New registration"
+  },
+  {
+    "id": "CS-1014",
+    "name": "Chuncy Fletcher",
+    "fbProfile": "https://www.facebook.com/burnnermusic",
+    "tier": "Bronze",
+    "deposits": 20.o,
+    "cashouts": 0.0,
+    "matchUsed": 0,
+    "cashoutChannel": "Chime (Belinda-Brown-89)",
+    "notes": "New registration"
   }
 ]
