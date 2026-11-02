@@ -149,10 +149,10 @@
     "name": "Chuncy Fletcher",
     "fbProfile": "https://www.facebook.com/burnnermusic",
     "tier": "Bronze",
-    "deposits": 20.o,
+    "deposits": 20.0,
     "cashouts": 0.0,
     "matchUsed": 1,
     "cashoutChannel": "Chime (Belinda-Brown-89)",
     "notes": "New registration"
-  },
+  }
 ]
